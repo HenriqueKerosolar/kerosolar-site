@@ -50,10 +50,19 @@ capa em `public/ebook-cover.webp`. Download direto (sem captura de e-mail).
 ## Pendências / próximos passos
 - [ ] Avaliações do Google: criar widget no featurable.com e colar o ID em
       `src/lib/site.ts` → `company.googleReviewsWidgetId`.
-- [ ] **Integração com o CRM**: o ponto único de captação é `src/lib/leads.ts`
-      (`submitLead`). Hoje abre o WhatsApp; para enviar ao CRM, criar `.env.local`
-      com `NEXT_PUBLIC_CRM_LEAD_ENDPOINT=https://crm.kerosolar.com.br/api/leads`.
-      O CRM e o site são repositórios separados que se integram por essa API.
+- [ ] **Integração com o CRM (formulário de orçamento)**: ponto único em
+      `src/lib/leads.ts` (`submitLead`). Hoje abre o WhatsApp; para enviar ao CRM,
+      criar `.env.local` com `NEXT_PUBLIC_CRM_LEAD_ENDPOINT=.../api/leads`.
+
+- [ ] **Chat do site → CRM**: o widget `src/components/ChatWidget.tsx` (texto/áudio/foto)
+      usa `src/lib/chat.ts`. Sem endpoint, roda em **modo demonstração** (respostas locais).
+      Para conectar ao CRM, criar `.env.local` com
+      `NEXT_PUBLIC_CRM_CHAT_ENDPOINT=.../api/public/chat`.
+      **Contrato esperado no CRM** (`POST` multipart): campos `sessionId`, `kind`
+      (text|audio|image), `text?`, `file?` → responde JSON `{ reply, handoff? }`.
+      No CRM isso deve chamar `ingestMessage({ channel: 'site', externalId: sessionId, text, ... })`
+      (requer adicionar `site` ao enum `Channel` no Prisma — migração no Supabase) e
+      devolver `result.reply`. CORS liberado só para o domínio do site.
 - [ ] Deploy (Vercel) + domínio kerosolar.com.br.
 - [ ] (Recomendado) mover o projeto para fora do OneDrive para evitar sync de
       node_modules e problemas de arquivos "sob demanda".
