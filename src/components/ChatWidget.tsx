@@ -13,6 +13,8 @@ export function ChatWidget() {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [recording, setRecording] = useState(false);
+  const [showTeaser, setShowTeaser] = useState(false);
+  const [hasUnread, setHasUnread] = useState(true);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
@@ -37,6 +39,24 @@ export function ChatWidget() {
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, sending]);
+
+  // convite proativo: aparece uma vez por visita, alguns segundos após carregar
+  useEffect(() => {
+    if (open || typeof window === "undefined") return;
+    if (sessionStorage.getItem("ks_chat_teaser_seen")) return;
+    const t = setTimeout(() => setShowTeaser(true), 4500);
+    return () => clearTimeout(t);
+  }, [open]);
+
+  function markTeaserSeen() {
+    setShowTeaser(false);
+    if (typeof window !== "undefined") sessionStorage.setItem("ks_chat_teaser_seen", "1");
+  }
+  function openChat() {
+    markTeaserSeen();
+    setHasUnread(false);
+    setOpen(true);
+  }
 
   function pushUser(msg: Omit<ChatMessage, "id" | "role">) {
     setMessages((m) => [...m, { id: nextId(), role: "user", ...msg }]);
@@ -102,18 +122,58 @@ export function ChatWidget() {
 
   return (
     <>
-      {/* Botões flutuantes */}
-      <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3">
-        {!open && (
-          <button
-            onClick={() => setOpen(true)}
-            aria-label="Abrir chat"
-            className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-600 text-white shadow-lg shadow-black/20 transition hover:scale-105 hover:bg-brand-700"
-          >
-            <ChatIcon />
-          </button>
-        )}
-      </div>
+      {/* Convite flutuante (botão + bolha proativa) */}
+      {!open && (
+        <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3">
+          {/* Bolha-convite: gancho de curiosidade */}
+          {showTeaser && (
+            <div className="ks-anim-pop relative max-w-[16.5rem] rounded-2xl rounded-br-sm bg-white p-3 pr-8 shadow-xl ring-1 ring-brand-100">
+              <button
+                onClick={markTeaserSeen}
+                aria-label="Fechar convite"
+                className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full text-muted transition hover:bg-brand-50"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+              </button>
+              <button onClick={openChat} className="flex items-start gap-2.5 text-left">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sun-500 text-base">☀</span>
+                <span className="text-sm leading-snug text-ink/90">
+                  <strong className="text-brand-700">Quanto você pode economizar?</strong> Me chama que eu calculo a sua economia com energia solar. 😊
+                </span>
+              </button>
+            </div>
+          )}
+
+          {/* Botão flutuante com halo, ponto online e badge */}
+          <div className="relative h-14 w-14">
+            <span
+              aria-hidden
+              className="ks-anim-halo pointer-events-none absolute inset-0 rounded-full border-2 border-sun-400"
+              style={{ animation: "ks-halo 2.3s ease-out infinite" }}
+            />
+            <button
+              onClick={openChat}
+              aria-label="Abrir chat de atendimento"
+              className="relative flex h-14 w-14 items-center justify-center rounded-full bg-brand-600 text-white shadow-lg shadow-black/25 transition hover:scale-105 hover:bg-brand-700"
+            >
+              <span className="ks-anim-attention" style={{ animation: "ks-attention 6s ease-in-out infinite" }}>
+                <ChatIcon />
+              </span>
+              {/* ponto "online" */}
+              <span className="absolute bottom-0.5 right-0.5 flex h-3.5 w-3.5 items-center justify-center">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+                <span className="relative h-2.5 w-2.5 rounded-full border-2 border-brand-600 bg-green-400" />
+              </span>
+              {/* badge de curiosidade (some após abrir) */}
+              {hasUnread && (
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-sun-500 text-[11px] font-bold text-brand-900 shadow ring-2 ring-white">
+                  1
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Janela do chat */}
       {open && (

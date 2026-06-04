@@ -80,3 +80,29 @@ h1, h2, h3, h4 {
   background-clip: text;
   color: transparent;
 }
+
+/* ── Animações do convite do chat (sutis) ───────────────────────────── */
+/* Halo que pulsa atrás do botão, chamando o olhar sem ser agressivo */
+@keyframes ks-halo {
+  0%   { transform: scale(1);   opacity: 0.55; }
+  70%  { transform: scale(1.9); opacity: 0;    }
+  100% { opacity: 0; }
+}
+/* "Balançadinha" discreta de tempos em tempos para despertar atenção */
+@keyframes ks-attention {
+  0%, 88%, 100% { transform: rotate(0deg); }
+  90% { transform: rotate(-9deg); }
+  92% { transform: rotate(8deg); }
+  94% { transform: rotate(-6deg); }
+  96% { transform: rotate(4deg); }
+  98% { transform: rotate(-2deg); }
+}
+/* Surgimento suave da bolha-convite */
+@keyframes ks-pop {
+  0%   { opacity: 0; transform: translateY(10px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ks-anim-halo, .ks-anim-attention, .ks-anim-pop { animation: none !important; }
+}
