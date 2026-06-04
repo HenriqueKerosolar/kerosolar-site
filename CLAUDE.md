@@ -50,7 +50,10 @@ capa em `public/ebook-cover.webp`. Download direto (sem captura de e-mail).
 ## Pendências / próximos passos
 - [ ] Avaliações do Google: criar widget no featurable.com e colar o ID em
       `src/lib/site.ts` → `company.googleReviewsWidgetId`.
-- [ ] Formulários hoje enviam para o WhatsApp; integrar com backend/CRM se desejado.
+- [ ] **Integração com o CRM**: o ponto único de captação é `src/lib/leads.ts`
+      (`submitLead`). Hoje abre o WhatsApp; para enviar ao CRM, criar `.env.local`
+      com `NEXT_PUBLIC_CRM_LEAD_ENDPOINT=https://crm.kerosolar.com.br/api/leads`.
+      O CRM e o site são repositórios separados que se integram por essa API.
 - [ ] Deploy (Vercel) + domínio kerosolar.com.br.
 - [ ] (Recomendado) mover o projeto para fora do OneDrive para evitar sync de
       node_modules e problemas de arquivos "sob demanda".

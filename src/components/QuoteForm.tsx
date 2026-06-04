@@ -1,11 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { whatsappLink } from "@/lib/site";
+import { submitLead } from "@/lib/leads";
 
-// Formulário "Solicite Orçamento". Sem backend ainda: monta uma mensagem
-// e abre o WhatsApp da empresa já preenchido (captação imediata de lead).
-export function QuoteForm({ compact = false }: { compact?: boolean }) {
+// Formulário "Solicite Orçamento". Envia o lead pelo módulo central
+// (`submitLead`): hoje abre o WhatsApp; quando o CRM estiver configurado,
+// também envia para a API do CRM.
+export function QuoteForm({
+  compact = false,
+  source = "site",
+}: {
+  compact?: boolean;
+  source?: string;
+}) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -15,18 +22,15 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const text = [
-      "*Solicitação de Orçamento — Site KeroSolar*",
-      `Nome: ${name}`,
-      phone && `Telefone: ${phone}`,
-      email && `E-mail: ${email}`,
-      city && `Cidade: ${city}`,
-      `Preferência de contato: ${contact}`,
-      message && `Mensagem: ${message}`,
-    ]
-      .filter(Boolean)
-      .join("\n");
-    window.open(whatsappLink(text), "_blank");
+    void submitLead({
+      name,
+      phone,
+      email,
+      city,
+      contactPreference: contact,
+      message,
+      source,
+    });
   }
 
   return (
