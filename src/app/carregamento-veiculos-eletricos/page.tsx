@@ -89,8 +89,8 @@ export default function VeiculosEletricosPage() {
           <div className="overflow-hidden rounded-3xl shadow-xl">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/img/parkingSolarPage.webp"
-              alt="Estacionamento com cobertura solar e recarga de veículos elétricos"
+              src="/img/carregamento-ev.webp"
+              alt="Estação de recarga para veículos elétricos"
               className="h-full w-full object-cover"
             />
           </div>

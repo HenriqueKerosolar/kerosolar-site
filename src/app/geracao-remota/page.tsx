@@ -13,8 +13,8 @@ export default function GeracaoRemotaPage() {
       eyebrow="Geração remota"
       title="Gere energia em um local, consuma em outro"
       subtitle="Cada modalidade tem finalidade e regras específicas. Conte com quem conhece as normas vigentes."
-      image="/img/ongridGenerator.webp"
-      imageAlt="Geração remota de energia solar"
+      image="/img/geracao-remota.webp"
+      imageAlt="Fazenda solar para geração remota de energia"
     >
       <p>
         Existem vários tipos de geração remota, cada um com finalidade específica e regras

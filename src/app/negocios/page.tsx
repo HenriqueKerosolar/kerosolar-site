@@ -13,8 +13,8 @@ export default function NegociosPage() {
       eyebrow="Negócios"
       title="Torne o seu negócio mais competitivo"
       subtitle="Da pequena empresa familiar à indústria — sempre a solução ideal para economizar em energia."
-      image="/img/measure-perfomance.png"
-      imageAlt="Energia solar para empresas"
+      image="/img/negocios-comercial.webp"
+      imageAlt="Painéis solares em telhado de empresa/indústria"
     >
       <p>
         Atendemos os mais variados tipos de negócio, de todos os portes e segmentos: pequenas
