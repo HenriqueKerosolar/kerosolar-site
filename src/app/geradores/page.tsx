@@ -94,9 +94,9 @@ export default function GeradoresPage() {
           </span>
           <h2 className="mt-3 text-3xl font-bold text-brand-800">Geradores Híbridos</h2>
           <div className="mt-4 grid gap-8 lg:grid-cols-[1fr_1.5fr]">
-            <div className="overflow-hidden rounded-2xl shadow-sm">
+            <div className="flex items-center justify-center overflow-hidden rounded-2xl bg-white p-4 shadow-sm ring-1 ring-brand-100">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/img/hibridoGenerator.webp" alt="Gerador Híbrido" className="h-full w-full object-cover" />
+              <img src="/img/kit-hibrido.webp" alt="Kit gerador solar híbrido com bateria" className="h-full w-full object-contain" />
             </div>
             <div className="space-y-4 text-[15px] leading-relaxed text-ink/80">
               <p>

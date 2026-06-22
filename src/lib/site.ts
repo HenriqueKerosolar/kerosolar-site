@@ -135,7 +135,7 @@ export const solutions: {
     title: "Híbrido",
     desc: "O inversor híbrido aceita várias fontes de energia simultaneamente.",
     href: "/geradores#hibrido",
-    img: "/img/Híbrido.webp",
+    img: "/img/kit-hibrido.webp",
   },
   {
     title: "Estacionamento",
