@@ -13,8 +13,8 @@ export default function AgroPage() {
       eyebrow="Agronegócio"
       title="Energia solar para o homem do campo"
       subtitle="Onde o agro precisar de energia, a KeroSolar tem a solução com menor custo e pagamento financiado."
-      image="/img/solutions-kerosolar.png"
-      imageAlt="Energia solar no agronegócio"
+      image="/img/agro-solar-rural.webp"
+      imageAlt="Instalação de energia solar em propriedade rural"
     >
       <p>
         Damos muita importância ao agro e atendemos aos mais variados ramos. Temos equipamentos
