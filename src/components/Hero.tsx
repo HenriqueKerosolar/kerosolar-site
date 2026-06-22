@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { company } from "@/lib/site";
+import { WhatsappIcon } from "./WhatsappIcon";
 
 export function Hero() {
   return (
@@ -25,20 +26,21 @@ export function Hero() {
           </p>
 
           <div className="mt-8 flex flex-wrap gap-4">
-            <Link
-              href="/contato"
-              className="rounded-full bg-sun-500 px-7 py-3.5 font-semibold text-brand-900 shadow-lg shadow-sun-500/20 transition hover:bg-sun-400"
-            >
-              Solicitar Orçamento
-            </Link>
             <a
               href={company.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full bg-sun-500 px-7 py-3.5 font-semibold text-brand-900 shadow-lg shadow-sun-500/20 transition hover:bg-sun-400"
+            >
+              <WhatsappIcon className="h-5 w-5" />
+              Solicitar Orçamento
+            </a>
+            <Link
+              href="/geradores"
               className="rounded-full border border-white/25 px-7 py-3.5 font-semibold text-white transition hover:bg-white/10"
             >
-              Falar no WhatsApp
-            </a>
+              Conhecer soluções
+            </Link>
           </div>
 
           <dl className="mt-12 grid max-w-md grid-cols-3 gap-6">

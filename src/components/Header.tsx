@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { company, nav, navOthers } from "@/lib/site";
 import { Logo } from "./Logo";
+import { WhatsappIcon } from "./WhatsappIcon";
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -71,12 +72,15 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <Link
-            href="/contato"
-            className="hidden rounded-full bg-sun-500 px-5 py-2.5 text-sm font-semibold text-brand-900 shadow-sm transition hover:bg-sun-400 sm:inline-block"
+          <a
+            href={company.whatsapp}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden items-center gap-2 rounded-full bg-sun-500 px-5 py-2.5 text-sm font-semibold text-brand-900 shadow-sm transition hover:bg-sun-400 sm:inline-flex"
           >
+            <WhatsappIcon className="h-4 w-4" />
             Solicitar Orçamento
-          </Link>
+          </a>
 
           {/* Botão mobile */}
           <button
@@ -109,13 +113,16 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
-            <Link
-              href="/contato"
+            <a
+              href={company.whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={() => setOpen(false)}
-              className="mt-2 rounded-full bg-sun-500 px-5 py-2.5 text-center text-sm font-semibold text-brand-900"
+              className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-sun-500 px-5 py-2.5 text-sm font-semibold text-brand-900"
             >
+              <WhatsappIcon className="h-4 w-4" />
               Solicitar Orçamento
-            </Link>
+            </a>
           </div>
         </nav>
       )}
