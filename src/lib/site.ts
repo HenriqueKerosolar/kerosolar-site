@@ -4,11 +4,11 @@
 export const company = {
   name: "KeroSolar",
   tagline: "Energia & Tecnologia",
-  phone: "(21) 4141-2089",
-  phoneRaw: "552141412089",
+  phone: "(21) 2027-6013",
+  phoneRaw: "552120276013",
   email: "kerosolar@kerosolar.com.br",
   hours: "Segunda a Sexta, 8h às 17h",
-  whatsapp: "https://api.whatsapp.com/send/?phone=552141412089&text=Ol%C3%A1%21+Gostaria+de+solicitar+um+or%C3%A7amento+de+energia+solar.",
+  whatsapp: "https://api.whatsapp.com/send/?phone=552120276013&text=Ol%C3%A1%21+Gostaria+de+solicitar+um+or%C3%A7amento+de+energia+solar.",
   social: {
     instagram: "https://www.instagram.com/kerosolar/",
     facebook: "https://www.facebook.com/kerosolartecnologia",
