@@ -7,9 +7,7 @@ export function Footer() {
     <footer className="mt-20 bg-brand-800 text-brand-100">
       <div className="container-px grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-1">
-          <div className="inline-block rounded-2xl bg-white p-4">
-            <Logo variant="full" className="h-24 w-auto" />
-          </div>
+          <Logo variant="circle" className="h-28 w-auto" />
           <p className="mt-4 text-sm leading-relaxed text-brand-200">
             Soluções completas em energia solar fotovoltaica: venda, instalação,
             manutenção, projeto, homologação e consultoria.

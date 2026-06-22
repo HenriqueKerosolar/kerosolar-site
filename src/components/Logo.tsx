@@ -6,6 +6,7 @@ import Image from "next/image";
 const ASSETS = {
   wordmark: { src: "/logo-wordmark.png", w: 885, h: 226 },
   full: { src: "/logo-kerosolar.png", w: 885, h: 818 },
+  circle: { src: "/logo-circular.png", w: 1024, h: 1024 },
 } as const;
 
 export function Logo({
