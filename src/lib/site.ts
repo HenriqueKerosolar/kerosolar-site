@@ -129,7 +129,7 @@ export const solutions: {
     title: "Off-Grid",
     desc: "Especializados em Off-Grid de maior porte e com foco industrial.",
     href: "/geradores#off-grid",
-    img: "/img/off-grid.webp",
+    img: "/img/kit-offgrid.webp",
   },
   {
     title: "Híbrido",

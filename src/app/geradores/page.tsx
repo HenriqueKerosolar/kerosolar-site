@@ -80,9 +80,9 @@ export default function GeradoresPage() {
                 (pico 30 kVA) até <strong className="text-brand-800">120 kVA (pico 320 kVA)</strong> em 220 V ou 380 V.
               </p>
             </div>
-            <div className="overflow-hidden rounded-2xl shadow-sm">
+            <div className="flex items-center justify-center overflow-hidden rounded-2xl bg-white p-4 shadow-sm ring-1 ring-brand-100">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/img/offgridGenerator.webp" alt="Gerador Off-Grid" className="h-full w-full object-cover" />
+              <img src="/img/kit-offgrid.webp" alt="Kit gerador solar Off-Grid com bateria de lítio" className="h-full w-full object-contain" />
             </div>
           </div>
         </section>
