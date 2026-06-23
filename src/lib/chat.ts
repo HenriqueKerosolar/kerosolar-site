@@ -46,10 +46,12 @@ export async function chatSetWhatsapp(convId: string, whatsapp: string) {
   await post({ action: "set-whatsapp", convId, whatsapp });
 }
 
-/** Detecta um número de telefone/WhatsApp brasileiro no texto. */
+/** Detecta um número de telefone/WhatsApp brasileiro no texto (sequência contígua). */
 export function extractPhone(text: string): string | null {
-  const digits = text.replace(/\D/g, "");
-  // 10 a 13 dígitos (com ou sem DDD/país)
-  if (digits.length >= 10 && digits.length <= 13) return digits;
+  // ex.: 983837434 | 21 99999-8888 | (21) 2027-6013 | +55 21 99999 8888
+  const m = text.match(/(?:\+?55\s*)?(?:\(?\d{2}\)?[\s.-]?)?\d{4,5}[\s.-]?\d{4}/);
+  if (!m) return null;
+  const digits = m[0].replace(/\D/g, "");
+  if (digits.length >= 8 && digits.length <= 13) return digits;
   return null;
 }

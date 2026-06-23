@@ -28,7 +28,6 @@ export function ChatWidget() {
   const [convId, setConvId] = useState<string | null>(null);
   const [gotWhatsapp, setGotWhatsapp] = useState(false);
   const pendingFirstMessage = useRef<string | null>(null);
-  const wppReaskTurn = useRef(0);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -111,15 +110,9 @@ export function ChatWidget() {
       pushBot("Perfeito! 📲 Já anotei seu WhatsApp. Agora me conta: como posso te ajudar? 😊");
       return;
     }
-    // atende o que a pessoa pediu (IA dá o orçamento se tiver o consumo)
+    // atende o que a pessoa pediu (IA dá o orçamento se tiver o consumo).
+    // NÃO fica pedindo o WhatsApp de novo — já foi pedido uma vez no início.
     await aiReply(text);
-    // de tempos em tempos, pede o WhatsApp de novo (sem encher)
-    if (!phone && !gotWhatsapp) {
-      wppReaskTurn.current += 1;
-      if (wppReaskTurn.current % 2 === 1) {
-        pushBot("Ah, e quando puder me manda seu *WhatsApp com DDD* pra eu registrar seu atendimento 😊📱");
-      }
-    }
   }
 
   // envia a mensagem ao CRM e mostra a resposta da IA
