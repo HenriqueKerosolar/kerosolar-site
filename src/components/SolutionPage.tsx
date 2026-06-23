@@ -10,6 +10,7 @@ export function SolutionPage({
   subtitle,
   image,
   imageAlt,
+  imageContain = false,
   children,
   showGuide = true,
 }: {
@@ -18,6 +19,8 @@ export function SolutionPage({
   subtitle?: string;
   image?: string;
   imageAlt?: string;
+  /** true para imagens de produto/diagrama com fundo branco (mostra inteira) */
+  imageContain?: boolean;
   children: React.ReactNode;
   showGuide?: boolean;
 }) {
@@ -29,9 +32,17 @@ export function SolutionPage({
         <div className="container-px grid items-start gap-12 lg:grid-cols-[1.5fr_1fr]">
           <Prose>{children}</Prose>
           {image && (
-            <div className="sticky top-24 overflow-hidden rounded-2xl shadow-lg">
+            <div
+              className={`sticky top-24 overflow-hidden rounded-2xl shadow-lg ${
+                imageContain ? "flex items-center justify-center bg-white p-4 ring-1 ring-brand-100" : ""
+              }`}
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={image} alt={imageAlt ?? title} className="h-full w-full object-cover" />
+              <img
+                src={image}
+                alt={imageAlt ?? title}
+                className={`h-full w-full ${imageContain ? "object-contain" : "object-cover"}`}
+              />
             </div>
           )}
         </div>

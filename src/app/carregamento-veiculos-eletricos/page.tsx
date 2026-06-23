@@ -86,12 +86,12 @@ export default function VeiculosEletricosPage() {
               </Link>
             </div>
           </div>
-          <div className="overflow-hidden rounded-3xl shadow-xl">
+          <div className="flex items-center justify-center overflow-hidden rounded-3xl bg-white p-6 shadow-xl ring-1 ring-brand-100">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/img/carregamento-ev.webp"
-              alt="Estação de recarga para veículos elétricos"
-              className="h-full w-full object-cover"
+              alt="Carregadores WEMOB para veículos elétricos"
+              className="h-full w-full object-contain"
             />
           </div>
         </div>

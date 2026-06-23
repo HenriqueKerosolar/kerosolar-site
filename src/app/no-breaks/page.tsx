@@ -13,8 +13,9 @@ export default function NoBreaksPage() {
       eyebrow="No-breaks solares"
       title="No-breaks que se pagam sozinhos"
       subtitle="Infinitamente superiores aos no-breaks tradicionais: protegem, geram energia e duram mais."
-      image="/img/inversor_string.webp"
-      imageAlt="No-break solar"
+      image="/img/nobreak.webp"
+      imageAlt="Diagrama de no-break solar com inversor híbrido Deye e bateria"
+      imageContain
     >
       <p>
         Os no-breaks solares são infinitamente superiores aos tradicionais. Primeiro porque{" "}

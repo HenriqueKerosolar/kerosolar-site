@@ -13,8 +13,8 @@ export default function BombeamentoPage() {
       eyebrow="Bombeamento solar"
       title="Água movida a energia do sol"
       subtitle="Sistemas para bombas tradicionais ou kits completos em CC, com financiamento e frete grátis para todo o Brasil."
-      image="/img/solar-panel.webp"
-      imageAlt="Bombeamento solar"
+      image="/img/bombeamento.webp"
+      imageAlt="Bombeamento solar abastecendo bebedouro em propriedade rural"
     >
       <p>
         Trabalhamos com vários tipos de sistema de bombeamento solar. Fornecemos sistemas para
