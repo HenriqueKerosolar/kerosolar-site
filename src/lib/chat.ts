@@ -1,10 +1,10 @@
-// Cliente do chat do site → CRM KeroSolar (via proxy /api/chat).
+// Cliente do chat do site → CRM KeroSolar (canal "webchat"), via proxy /api/chat.
 //
-// O CRM (api/public/chat-site) usa um fluxo de 3 ações:
-//   start        → cria contato + lead ("Entrou pelo Site") + conversa  → retorna { convId }
-//   message      → registra uma mensagem do visitante na conversa
-//   set-whatsapp → grava o WhatsApp do visitante (gatilho para o handoff)
-// O endpoint NÃO devolve resposta de bot — a sequência acontece no CRM/WhatsApp.
+// O endpoint público do CRM (/api/public/webchat) usa o MESMO motor do WhatsApp
+// (ingestMessage). Contrato:
+//   POST { visitorId, name?, text }  → { reply, handoff }
+//   GET  ?visitorId=...&after=<iso>  → { messages }   (polling de respostas humanas)
+// O visitante é identificado por um `visitorId` estável guardado no navegador.
 
 export type ChatRole = "user" | "bot";
 export type ChatKind = "text" | "audio" | "image";
@@ -18,40 +18,35 @@ export interface ChatMessage {
   mediaUrl?: string;
 }
 
-async function post(body: Record<string, unknown>) {
+const VISITOR_KEY = "ks_chat_visitor";
+
+/** ID estável do visitante (persistido no navegador). Usado como identidade no CRM. */
+export function getVisitorId(): string {
+  if (typeof window === "undefined") return "anon";
+  let id = localStorage.getItem(VISITOR_KEY);
+  if (!id) {
+    id = "site-" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+    localStorage.setItem(VISITOR_KEY, id);
+  }
+  return id;
+}
+
+/** Envia uma mensagem ao CRM e retorna a resposta da IA (mesmo agente do WhatsApp). */
+export async function chatSend(
+  visitorId: string,
+  text: string,
+  name?: string,
+): Promise<{ reply: string | null; handoff: boolean }> {
   const res = await fetch("/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    body: JSON.stringify({ visitorId, name, text }),
   });
-  const data = await res.json().catch(() => ({}));
+  const data = (await res.json().catch(() => ({}))) as {
+    reply?: string;
+    handoff?: boolean;
+    error?: string;
+  };
   if (!res.ok) throw new Error(data?.error || `Erro ${res.status}`);
-  return data as { ok?: boolean; convId?: string; leadId?: string; reply?: string; handoff?: boolean; error?: string };
-}
-
-/** Inicia a conversa com o nome do visitante. Retorna o convId. */
-export async function chatStart(visitorName: string, visitorEmail?: string) {
-  const r = await post({ action: "start", visitorName, visitorEmail });
-  return r.convId ?? null;
-}
-
-/** Envia uma mensagem e retorna a resposta da IA (mesmo agente do WhatsApp). */
-export async function chatMessage(convId: string, message: string): Promise<string | null> {
-  const r = await post({ action: "message", convId, message });
-  return r.reply ?? null;
-}
-
-/** Grava o WhatsApp do visitante (dispara o handoff no CRM). */
-export async function chatSetWhatsapp(convId: string, whatsapp: string) {
-  await post({ action: "set-whatsapp", convId, whatsapp });
-}
-
-/** Detecta um número de telefone/WhatsApp brasileiro no texto (sequência contígua). */
-export function extractPhone(text: string): string | null {
-  // ex.: 983837434 | 21 99999-8888 | (21) 2027-6013 | +55 21 99999 8888
-  const m = text.match(/(?:\+?55\s*)?(?:\(?\d{2}\)?[\s.-]?)?\d{4,5}[\s.-]?\d{4}/);
-  if (!m) return null;
-  const digits = m[0].replace(/\D/g, "");
-  if (digits.length >= 8 && digits.length <= 13) return digits;
-  return null;
+  return { reply: data.reply ?? null, handoff: !!data.handoff };
 }

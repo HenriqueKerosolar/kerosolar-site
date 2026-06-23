@@ -2,18 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { company } from "@/lib/site";
-import {
-  chatStart,
-  chatMessage,
-  chatSetWhatsapp,
-  extractPhone,
-  type ChatMessage,
-} from "@/lib/chat";
+import { getVisitorId, chatSend, type ChatMessage } from "@/lib/chat";
 
 let _id = 0;
 const nextId = () => `m${++_id}`;
 
-type Phase = "name" | "chat";
+type Phase = "name" | "contact" | "chat";
 
 export function ChatWidget() {
   const [open, setOpen] = useState(false);
@@ -23,11 +17,17 @@ export function ChatWidget() {
   const [sending, setSending] = useState(false);
   const [recording, setRecording] = useState(false);
 
-  // estado da conversa com o CRM
+  // estado da conversa com o CRM (canal webchat)
   const [phase, setPhase] = useState<Phase>("name");
-  const [convId, setConvId] = useState<string | null>(null);
-  const [gotWhatsapp, setGotWhatsapp] = useState(false);
+  const [visitorName, setVisitorName] = useState("");
+  const [visitorContact, setVisitorContact] = useState("");
+  const visitorIdRef = useRef<string>("");
   const pendingFirstMessage = useRef<string | null>(null);
+
+  // identidade estável do visitante (persistida no navegador)
+  useEffect(() => {
+    visitorIdRef.current = getVisitorId();
+  }, []);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -69,58 +69,34 @@ export function ChatWidget() {
     setMessages(init);
   }
 
-  // ── Fase 1: nome → inicia a conversa no CRM, depois pede o WhatsApp ─────
-  async function afterName(name: string) {
-    setSending(true);
-    try {
-      const id = await chatStart(name);
-      setConvId(id);
-      setPhase("chat");
-      const first = pendingFirstMessage.current;
-      pendingFirstMessage.current = null;
-      if (id && first) {
-        // ATENDE já o que a pessoa pediu na caixinha (IA responde)
-        const reply = await chatMessage(id, first);
-        pushBot(reply || "Recebido! 👍");
-        pushBot(`E me passa seu *WhatsApp com DDD*, ${name.split(" ")[0]}? Assim garanto seu atendimento 😊📱`);
-      } else {
-        pushBot(
-          `Prazer, ${name.split(" ")[0]}! 😊 Como posso te ajudar? E já me adianta seu *WhatsApp com DDD* pra eu registrar seu atendimento 📱`,
-        );
-      }
-    } catch {
-      pushBot("Tivemos um probleminha para iniciar o atendimento. 🙏 Se preferir, fale agora pelo WhatsApp no botão do topo do chat.");
-    } finally {
-      setSending(false);
-    }
+  // ── Fase 1: nome → pede telefone/e-mail ──
+  function afterName(name: string) {
+    setVisitorName(name);
+    setPhase("contact");
+    pushBot(`Prazer, ${name}! 😊 Para eu te atender, me informe seu telefone ou e-mail:`);
   }
 
-  // Conversa: SEMPRE atende o pedido (IA responde). Captura o WhatsApp quando
-  // a pessoa mandar e vai pedindo de novo, sem travar.
+  // ── Fase 2: telefone/e-mail → entra na conversa ──
+  async function afterContact(contact: string) {
+    setVisitorContact(contact);
+    setPhase("chat");
+    const first = pendingFirstMessage.current;
+    pendingFirstMessage.current = null;
+    // Não inclui o telefone no texto para não confundir o motor do CRM
+    const opener = first || `Olá! Meu nome é ${visitorName}.`;
+    await aiReply(opener, visitorName);
+  }
+
+  // Conversa: tudo passa pelo motor do WhatsApp (ingestMessage no CRM).
   async function afterChat(text: string) {
-    const phone = !gotWhatsapp ? extractPhone(text) : null;
-    const onlyPhone = !!phone && text.replace(/[\d\s\-()+]/g, "").trim() === "";
-    if (phone && convId) {
-      try {
-        await chatSetWhatsapp(convId, phone);
-        setGotWhatsapp(true);
-      } catch {}
-    }
-    if (onlyPhone) {
-      pushBot("Perfeito! 📲 Já anotei seu WhatsApp. Agora me conta: como posso te ajudar? 😊");
-      return;
-    }
-    // atende o que a pessoa pediu (IA dá o orçamento se tiver o consumo).
-    // NÃO fica pedindo o WhatsApp de novo — já foi pedido uma vez no início.
     await aiReply(text);
   }
 
-  // envia a mensagem ao CRM e mostra a resposta da IA
-  async function aiReply(text: string) {
-    if (!convId) return;
+  // envia a mensagem ao CRM (webchat) e mostra a resposta da IA
+  async function aiReply(text: string, name?: string) {
     setSending(true);
     try {
-      const reply = await chatMessage(convId, text);
+      const { reply } = await chatSend(visitorIdRef.current, text, name ?? (visitorName || undefined));
       pushBot(reply || "Recebido! 👍 Um especialista vai te responder em instantes.");
     } catch {
       pushBot("Ops, não consegui responder agora. 🙏 Tente de novo ou fale pelo WhatsApp no topo do chat.");
@@ -134,7 +110,8 @@ export function ChatWidget() {
     if (!text || sending) return;
     setInput("");
     pushUser({ kind: "text", text });
-    if (phase === "name") await afterName(text);
+    if (phase === "name") afterName(text);
+    else if (phase === "contact") await afterContact(text);
     else await afterChat(text);
   }
 
@@ -173,10 +150,9 @@ export function ChatWidget() {
   }
 
   async function sendNote(note: string) {
-    if (!convId) return;
     setSending(true);
     try {
-      const reply = await chatMessage(convId, note);
+      const { reply } = await chatSend(visitorIdRef.current, note, visitorName || undefined);
       pushBot(reply || "Recebido! 👍 Já encaminhei para o nosso time.");
     } catch {
       pushBot("Não consegui enviar o arquivo agora. 🙏 Tente pelo WhatsApp no topo do chat.");
@@ -294,7 +270,7 @@ export function ChatWidget() {
                 }
               }}
               rows={1}
-              placeholder={recording ? "Gravando áudio..." : phase === "name" ? "Digite seu nome..." : "Escreva sua mensagem..."}
+              placeholder={recording ? "Gravando áudio..." : phase === "name" ? "Digite seu nome..." : phase === "contact" ? "Telefone ou e-mail..." : "Escreva sua mensagem..."}
               disabled={recording}
               className="max-h-24 flex-1 resize-none rounded-2xl border border-brand-200 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 disabled:bg-brand-50"
             />

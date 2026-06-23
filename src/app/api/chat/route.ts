@@ -1,22 +1,28 @@
 import { NextResponse } from "next/server";
 
-// Proxy do chat do site → endpoint do CRM (api/public/chat-site).
-// Evita CORS (mesma origem para o navegador) e mantém a URL do CRM no servidor.
-// Configure CRM_CHAT_ENDPOINT no .env.local.
-const CRM_ENDPOINT = process.env.CRM_CHAT_ENDPOINT;
+// Proxy do chat do site → endpoint público do CRM (/api/public/webchat).
+// Evita CORS (mesma origem para o navegador) e mantém a URL/chave do CRM no servidor.
+// Configure no .env.local (e nas env vars da Vercel do SITE):
+//   CRM_WEBCHAT_ENDPOINT = https://kerosolar-crm.vercel.app/api/public/webchat
+//   CRM_WEBCHAT_API_KEY  = <mesma chave WEBCHAT_API_KEY do CRM>
+const ENDPOINT = process.env.CRM_WEBCHAT_ENDPOINT;
+const API_KEY = process.env.CRM_WEBCHAT_API_KEY;
 
 export async function POST(req: Request) {
-  if (!CRM_ENDPOINT) {
+  if (!ENDPOINT) {
     return NextResponse.json(
-      { error: "Chat ainda não configurado (defina CRM_CHAT_ENDPOINT)." },
+      { error: "Chat ainda não configurado (defina CRM_WEBCHAT_ENDPOINT)." },
       { status: 503 },
     );
   }
   try {
     const body = await req.text();
-    const res = await fetch(CRM_ENDPOINT, {
+    const res = await fetch(ENDPOINT, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(API_KEY ? { "x-api-key": API_KEY } : {}),
+      },
       body,
       cache: "no-store",
     });
