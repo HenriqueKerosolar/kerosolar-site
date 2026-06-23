@@ -1,11 +1,10 @@
-// Cliente do chat do site → CRM KeroSolar.
+// Cliente do chat do site → CRM KeroSolar (via proxy /api/chat).
 //
-// Contrato com o CRM (endpoint em NEXT_PUBLIC_CRM_CHAT_ENDPOINT):
-//   POST multipart/form-data { sessionId, kind: text|audio|image, text?, file? }
-//   Resposta JSON: { reply: string, handoff?: boolean }
-// No CRM, isso deve chamar `ingestMessage({ channel: 'site', externalId: sessionId, text, ... })`
-// e devolver `result.reply`. Enquanto o endpoint não existe, o widget usa um
-// fallback local (modo demonstração) para já funcionar visualmente.
+// O CRM (api/public/chat-site) usa um fluxo de 3 ações:
+//   start        → cria contato + lead ("Entrou pelo Site") + conversa  → retorna { convId }
+//   message      → registra uma mensagem do visitante na conversa
+//   set-whatsapp → grava o WhatsApp do visitante (gatilho para o handoff)
+// O endpoint NÃO devolve resposta de bot — a sequência acontece no CRM/WhatsApp.
 
 export type ChatRole = "user" | "bot";
 export type ChatKind = "text" | "audio" | "image";
@@ -19,61 +18,37 @@ export interface ChatMessage {
   mediaUrl?: string;
 }
 
-const ENDPOINT = process.env.NEXT_PUBLIC_CRM_CHAT_ENDPOINT;
-
-export function isChatConnected() {
-  return Boolean(ENDPOINT);
+async function post(body: Record<string, unknown>) {
+  const res = await fetch("/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.error || `Erro ${res.status}`);
+  return data as { ok?: boolean; convId?: string; leadId?: string; error?: string };
 }
 
-const SESSION_KEY = "kerosolar_chat_session";
-
-export function getSessionId(): string {
-  if (typeof window === "undefined") return "server";
-  let id = localStorage.getItem(SESSION_KEY);
-  if (!id) {
-    id = crypto.randomUUID();
-    localStorage.setItem(SESSION_KEY, id);
-  }
-  return id;
+/** Inicia a conversa com o nome do visitante. Retorna o convId. */
+export async function chatStart(visitorName: string, visitorEmail?: string) {
+  const r = await post({ action: "start", visitorName, visitorEmail });
+  return r.convId ?? null;
 }
 
-export interface SendResult {
-  reply: string;
-  handoff?: boolean;
+/** Registra uma mensagem do visitante na conversa. */
+export async function chatMessage(convId: string, message: string) {
+  await post({ action: "message", convId, message });
 }
 
-export async function sendChat(opts: {
-  kind: ChatKind;
-  text?: string;
-  file?: Blob;
-  fileName?: string;
-}): Promise<SendResult> {
-  if (!ENDPOINT) {
-    // pequena espera para simular o "digitando..."
-    await new Promise((r) => setTimeout(r, 600));
-    return fallbackReply(opts.kind);
-  }
-
-  const form = new FormData();
-  form.append("sessionId", getSessionId());
-  form.append("kind", opts.kind);
-  if (opts.text) form.append("text", opts.text);
-  if (opts.file) form.append("file", opts.file, opts.fileName ?? "arquivo");
-
-  const res = await fetch(ENDPOINT, { method: "POST", body: form });
-  if (!res.ok) throw new Error(`Falha ao enviar (${res.status})`);
-  const data = (await res.json()) as Partial<SendResult>;
-  return { reply: data.reply ?? "", handoff: data.handoff };
+/** Grava o WhatsApp do visitante (dispara o handoff no CRM). */
+export async function chatSetWhatsapp(convId: string, whatsapp: string) {
+  await post({ action: "set-whatsapp", convId, whatsapp });
 }
 
-function fallbackReply(kind: ChatKind): SendResult {
-  if (kind === "audio")
-    return { reply: "Recebi seu áudio! 🎙️ Em instantes um especialista te responde." };
-  if (kind === "image")
-    return { reply: "Recebi sua imagem! 📷 Já vou analisar para te ajudar melhor." };
-  return {
-    reply:
-      "Obrigado pela mensagem! 🌞 Nosso atendimento está sendo conectado. " +
-      "Se preferir, fale agora pelo WhatsApp no botão do topo do chat.",
-  };
+/** Detecta um número de telefone/WhatsApp brasileiro no texto. */
+export function extractPhone(text: string): string | null {
+  const digits = text.replace(/\D/g, "");
+  // 10 a 13 dígitos (com ou sem DDD/país)
+  if (digits.length >= 10 && digits.length <= 13) return digits;
+  return null;
 }

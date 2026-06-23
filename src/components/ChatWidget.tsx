@@ -2,10 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import { company } from "@/lib/site";
-import { sendChat, type ChatMessage } from "@/lib/chat";
+import {
+  chatStart,
+  chatMessage,
+  chatSetWhatsapp,
+  extractPhone,
+  type ChatMessage,
+} from "@/lib/chat";
 
 let _id = 0;
 const nextId = () => `m${++_id}`;
+
+type Phase = "name" | "chat";
 
 export function ChatWidget() {
   const [open, setOpen] = useState(false);
@@ -16,12 +24,19 @@ export function ChatWidget() {
   const [showTeaser, setShowTeaser] = useState(false);
   const [hasUnread, setHasUnread] = useState(true);
 
+  // estado da conversa com o CRM
+  const [phase, setPhase] = useState<Phase>("name");
+  const [convId, setConvId] = useState<string | null>(null);
+  const [visitorName, setVisitorName] = useState("");
+  const [askedWhatsapp, setAskedWhatsapp] = useState(false);
+  const [gotWhatsapp, setGotWhatsapp] = useState(false);
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // mensagem de boas-vindas ao abrir
+  // saudação ao abrir (pede o nome)
   useEffect(() => {
     if (open && messages.length === 0) {
       setMessages([
@@ -29,18 +44,17 @@ export function ChatWidget() {
           id: nextId(),
           role: "bot",
           kind: "text",
-          text: "Olá! 🌞 Sou o assistente da KeroSolar. Quer um orçamento ou tirar uma dúvida sobre energia solar? Pode escrever, mandar um áudio ou até a foto da sua conta de luz.",
+          text: "Olá! 🌞 Sou o assistente da KeroSolar. Pra começar o seu atendimento, como posso te chamar?",
         },
       ]);
     }
   }, [open, messages.length]);
 
-  // rola para a última mensagem
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, sending]);
 
-  // convite proativo: aparece uma vez por visita, alguns segundos após carregar
+  // convite proativo (1x por visita)
   useEffect(() => {
     if (open || typeof window === "undefined") return;
     if (sessionStorage.getItem("ks_chat_teaser_seen")) return;
@@ -65,36 +79,73 @@ export function ChatWidget() {
     setMessages((m) => [...m, { id: nextId(), role: "bot", kind: "text", text }]);
   }
 
-  async function deliver(opts: { kind: ChatMessage["kind"]; text?: string; file?: Blob; fileName?: string }) {
+  // ── Fase 1: nome → inicia conversa no CRM ──────────────────────────────
+  async function submitName(name: string) {
+    pushUser({ kind: "text", text: name });
+    setVisitorName(name);
     setSending(true);
     try {
-      const { reply } = await sendChat(opts);
-      if (reply) pushBot(reply);
+      const id = await chatStart(name);
+      setConvId(id);
+      setPhase("chat");
+      pushBot(
+        `Prazer, ${name.split(" ")[0]}! 😊 Me conta como posso ajudar — orçamento, dúvida sobre energia solar... Pode escrever, mandar áudio ou a foto da sua conta de luz.`,
+      );
     } catch {
-      pushBot("Ops, não consegui enviar agora. Tente novamente ou fale pelo WhatsApp. 🙏");
+      pushBot(
+        "Tivemos um probleminha para iniciar o atendimento. 🙏 Se preferir, fale agora pelo WhatsApp no botão do topo do chat.",
+      );
     } finally {
       setSending(false);
     }
   }
 
-  async function handleSendText() {
+  // ── Fase 2: mensagens → CRM (detecta WhatsApp p/ handoff) ──────────────
+  async function sendToConversation(text: string) {
+    if (!convId) return;
+    setSending(true);
+    try {
+      const phone = extractPhone(text);
+      if (phone && !gotWhatsapp) {
+        await chatSetWhatsapp(convId, phone);
+        setGotWhatsapp(true);
+        pushBot(
+          `Perfeito! 📲 Um especialista da KeroSolar já vai te chamar no seu WhatsApp. Obrigado, ${visitorName.split(" ")[0]}!`,
+        );
+      } else {
+        await chatMessage(convId, text);
+        if (!askedWhatsapp && !gotWhatsapp) {
+          setAskedWhatsapp(true);
+          pushBot("Anotado! 👍 Pra um especialista continuar seu atendimento, me passa seu WhatsApp com DDD? 📱");
+        } else {
+          pushBot("Recebido! 👍 Pode continuar, estou registrando tudo para o nosso time.");
+        }
+      }
+    } catch {
+      pushBot("Ops, não consegui enviar agora. 🙏 Tente novamente ou fale pelo WhatsApp no topo do chat.");
+    } finally {
+      setSending(false);
+    }
+  }
+
+  async function handleSend() {
     const text = input.trim();
     if (!text || sending) return;
     setInput("");
-    pushUser({ kind: "text", text });
-    await deliver({ kind: "text", text });
+    if (phase === "name") await submitName(text);
+    else await sendToConversation(text);
   }
 
   function handlePhoto(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = "";
-    if (!file) return;
-    const url = URL.createObjectURL(file);
-    pushUser({ kind: "image", mediaUrl: url });
-    void deliver({ kind: "image", file, fileName: file.name });
+    if (!file || phase !== "chat") return;
+    pushUser({ kind: "image", mediaUrl: URL.createObjectURL(file) });
+    void sendNote("📷 Cliente enviou uma foto pelo chat do site.");
   }
 
   async function toggleRecording() {
+    if (phase !== "chat") return;
     if (recording) {
       recorderRef.current?.stop();
       return;
@@ -107,9 +158,8 @@ export function ChatWidget() {
       rec.onstop = () => {
         stream.getTracks().forEach((t) => t.stop());
         const blob = new Blob(chunksRef.current, { type: rec.mimeType || "audio/webm" });
-        const url = URL.createObjectURL(blob);
-        pushUser({ kind: "audio", mediaUrl: url });
-        void deliver({ kind: "audio", file: blob, fileName: "audio.webm" });
+        pushUser({ kind: "audio", mediaUrl: URL.createObjectURL(blob) });
+        void sendNote("🎙️ Cliente enviou um áudio pelo chat do site.");
         setRecording(false);
       };
       recorderRef.current = rec;
@@ -120,12 +170,25 @@ export function ChatWidget() {
     }
   }
 
+  // mídia: registra uma nota no CRM (endpoint é texto) + acusa recebimento
+  async function sendNote(note: string) {
+    if (!convId) return;
+    setSending(true);
+    try {
+      await chatMessage(convId, note);
+      pushBot("Recebido! 👍 Já encaminhei para o nosso time.");
+    } catch {
+      pushBot("Não consegui enviar o arquivo agora. 🙏 Tente pelo WhatsApp no topo do chat.");
+    } finally {
+      setSending(false);
+    }
+  }
+
   return (
     <>
       {/* Convite flutuante (botão + bolha proativa) */}
       {!open && (
         <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3">
-          {/* Bolha-convite: gancho de curiosidade */}
           {showTeaser && (
             <div className="ks-anim-pop relative max-w-[16.5rem] rounded-2xl rounded-br-sm bg-white p-3 pr-8 shadow-xl ring-1 ring-brand-100">
               <button
@@ -144,13 +207,8 @@ export function ChatWidget() {
             </div>
           )}
 
-          {/* Botão flutuante com halo, ponto online e badge */}
           <div className="relative h-14 w-14">
-            <span
-              aria-hidden
-              className="ks-anim-halo pointer-events-none absolute inset-0 rounded-full border-2 border-sun-400"
-              style={{ animation: "ks-halo 2.3s ease-out infinite" }}
-            />
+            <span aria-hidden className="ks-anim-halo pointer-events-none absolute inset-0 rounded-full border-2 border-sun-400" style={{ animation: "ks-halo 2.3s ease-out infinite" }} />
             <button
               onClick={openChat}
               aria-label="Abrir chat de atendimento"
@@ -159,16 +217,12 @@ export function ChatWidget() {
               <span className="ks-anim-attention" style={{ animation: "ks-attention 6s ease-in-out infinite" }}>
                 <ChatIcon />
               </span>
-              {/* ponto "online" */}
               <span className="absolute bottom-0.5 right-0.5 flex h-3.5 w-3.5 items-center justify-center">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
                 <span className="relative h-2.5 w-2.5 rounded-full border-2 border-brand-600 bg-green-400" />
               </span>
-              {/* badge de curiosidade (some após abrir) */}
               {hasUnread && (
-                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-sun-500 text-[11px] font-bold text-brand-900 shadow ring-2 ring-white">
-                  1
-                </span>
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-sun-500 text-[11px] font-bold text-brand-900 shadow ring-2 ring-white">1</span>
               )}
             </button>
           </div>
@@ -178,20 +232,13 @@ export function ChatWidget() {
       {/* Janela do chat */}
       {open && (
         <div className="fixed bottom-5 right-5 z-50 flex h-[min(34rem,calc(100vh-2.5rem))] w-[min(23rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-2xl">
-          {/* Header */}
           <div className="flex items-center gap-3 bg-gradient-to-br from-brand-700 to-brand-800 px-4 py-3 text-white">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sun-500 text-lg">☀</div>
             <div className="flex-1">
               <p className="text-sm font-semibold leading-tight">Atendimento KeroSolar</p>
               <p className="text-xs text-brand-200">Responde na hora</p>
             </div>
-            <a
-              href={company.whatsapp}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Falar no WhatsApp"
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-[#25D366] transition hover:opacity-90"
-            >
+            <a href={company.whatsapp} target="_blank" rel="noopener noreferrer" aria-label="Falar no WhatsApp" className="flex h-8 w-8 items-center justify-center rounded-full bg-[#25D366] transition hover:opacity-90">
               <WhatsappIcon />
             </a>
             <button onClick={() => setOpen(false)} aria-label="Fechar chat" className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-white/10">
@@ -199,7 +246,6 @@ export function ChatWidget() {
             </button>
           </div>
 
-          {/* Mensagens */}
           <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto bg-brand-50/50 p-4">
             {messages.map((m) => (
               <Bubble key={m.id} msg={m} />
@@ -213,10 +259,9 @@ export function ChatWidget() {
             )}
           </div>
 
-          {/* Barra de entrada */}
           <div className="flex items-end gap-2 border-t border-brand-100 bg-white p-3">
             <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
-            <IconButton label="Enviar foto" onClick={() => fileInputRef.current?.click()} disabled={sending || recording}>
+            <IconButton label="Enviar foto" onClick={() => fileInputRef.current?.click()} disabled={sending || recording || phase === "name"}>
               <PhotoIcon />
             </IconButton>
 
@@ -226,17 +271,17 @@ export function ChatWidget() {
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
-                  void handleSendText();
+                  void handleSend();
                 }
               }}
               rows={1}
-              placeholder={recording ? "Gravando áudio..." : "Escreva sua mensagem..."}
+              placeholder={recording ? "Gravando áudio..." : phase === "name" ? "Digite seu nome..." : "Escreva sua mensagem..."}
               disabled={recording}
               className="max-h-24 flex-1 resize-none rounded-2xl border border-brand-200 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 disabled:bg-brand-50"
             />
 
-            {input.trim() ? (
-              <IconButton label="Enviar" onClick={handleSendText} disabled={sending} primary>
+            {input.trim() || phase === "name" ? (
+              <IconButton label="Enviar" onClick={handleSend} disabled={sending || !input.trim()} primary>
                 <SendIcon />
               </IconButton>
             ) : (
@@ -255,19 +300,13 @@ function Bubble({ msg }: { msg: ChatMessage }) {
   const isUser = msg.role === "user";
   return (
     <div className={isUser ? "flex justify-end" : "flex justify-start"}>
-      <div
-        className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm shadow-sm ${
-          isUser ? "rounded-br-sm bg-brand-600 text-white" : "rounded-bl-sm bg-white text-ink/90"
-        }`}
-      >
+      <div className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm shadow-sm ${isUser ? "rounded-br-sm bg-brand-600 text-white" : "rounded-bl-sm bg-white text-ink/90"}`}>
         {msg.kind === "text" && <p className="whitespace-pre-wrap leading-relaxed">{msg.text}</p>}
         {msg.kind === "image" && msg.mediaUrl && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={msg.mediaUrl} alt="Imagem enviada" className="max-h-48 rounded-lg" />
         )}
-        {msg.kind === "audio" && msg.mediaUrl && (
-          <audio controls src={msg.mediaUrl} className="w-56 max-w-full" />
-        )}
+        {msg.kind === "audio" && msg.mediaUrl && <audio controls src={msg.mediaUrl} className="w-56 max-w-full" />}
       </div>
     </div>
   );
@@ -295,11 +334,7 @@ function IconButton({
       disabled={disabled}
       aria-label={label}
       className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition disabled:opacity-40 ${
-        recording
-          ? "animate-pulse bg-red-500 text-white"
-          : primary
-            ? "bg-sun-500 text-brand-900 hover:bg-sun-400"
-            : "bg-brand-50 text-brand-600 hover:bg-brand-100"
+        recording ? "animate-pulse bg-red-500 text-white" : primary ? "bg-sun-500 text-brand-900 hover:bg-sun-400" : "bg-brand-50 text-brand-600 hover:bg-brand-100"
       }`}
     >
       {children}
@@ -311,7 +346,6 @@ function Dot() {
   return <span className="h-2 w-2 animate-bounce rounded-full bg-brand-300 [animation-delay:0ms] [&:nth-child(2)]:[animation-delay:150ms] [&:nth-child(3)]:[animation-delay:300ms]" />;
 }
 
-/* ícones */
 function ChatIcon() {
   return (
     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
