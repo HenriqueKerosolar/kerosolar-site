@@ -13,7 +13,7 @@ import {
 let _id = 0;
 const nextId = () => `m${++_id}`;
 
-type Phase = "name" | "whatsapp" | "chat";
+type Phase = "name" | "chat";
 
 export function ChatWidget() {
   const [open, setOpen] = useState(false);
@@ -26,10 +26,9 @@ export function ChatWidget() {
   // estado da conversa com o CRM
   const [phase, setPhase] = useState<Phase>("name");
   const [convId, setConvId] = useState<string | null>(null);
-  const [visitorName, setVisitorName] = useState("");
   const [gotWhatsapp, setGotWhatsapp] = useState(false);
   const pendingFirstMessage = useRef<string | null>(null);
-  const wppAttempts = useRef(0);
+  const wppReaskTurn = useRef(0);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -73,15 +72,23 @@ export function ChatWidget() {
 
   // ── Fase 1: nome → inicia a conversa no CRM, depois pede o WhatsApp ─────
   async function afterName(name: string) {
-    setVisitorName(name);
     setSending(true);
     try {
       const id = await chatStart(name);
       setConvId(id);
-      setPhase("whatsapp");
-      pushBot(
-        `Prazer, ${name.split(" ")[0]}! 😊 Antes de tudo, me passa seu *WhatsApp com DDD*? Assim garanto seu atendimento e um especialista pode te chamar por lá também. 📱`,
-      );
+      setPhase("chat");
+      const first = pendingFirstMessage.current;
+      pendingFirstMessage.current = null;
+      if (id && first) {
+        // ATENDE já o que a pessoa pediu na caixinha (IA responde)
+        const reply = await chatMessage(id, first);
+        pushBot(reply || "Recebido! 👍");
+        pushBot(`E me passa seu *WhatsApp com DDD*, ${name.split(" ")[0]}? Assim garanto seu atendimento 😊📱`);
+      } else {
+        pushBot(
+          `Prazer, ${name.split(" ")[0]}! 😊 Como posso te ajudar? E já me adianta seu *WhatsApp com DDD* pra eu registrar seu atendimento 📱`,
+        );
+      }
     } catch {
       pushBot("Tivemos um probleminha para iniciar o atendimento. 🙏 Se preferir, fale agora pelo WhatsApp no botão do topo do chat.");
     } finally {
@@ -89,51 +96,30 @@ export function ChatWidget() {
     }
   }
 
-  // ── Fase 2: WhatsApp primeiro (prioridade) ─────────────────────────────
-  async function afterWhatsapp(text: string) {
-    if (!convId) return;
-    const phone = extractPhone(text);
-    if (!phone) {
-      wppAttempts.current += 1;
-      if (wppAttempts.current < 2) {
-        pushBot("É rapidinho 😊 me manda seu WhatsApp com DDD — ex.: *21 99999-8888*.");
-        return;
-      }
-      // depois de 2 tentativas, segue o atendimento pela IA mesmo sem o número
-      pushBot("Sem problema! Vou te ajudar por aqui então 😊");
-      setPhase("chat");
-      await aiReply(text);
-      return;
-    }
-    setSending(true);
-    try {
-      await chatSetWhatsapp(convId, phone);
-      setGotWhatsapp(true);
-      setPhase("chat");
-      pushBot("Perfeito! 📲 Já anotei seu WhatsApp.");
-      const first = pendingFirstMessage.current;
-      pendingFirstMessage.current = null;
-      // se a pessoa já tinha escrito algo na caixinha, a IA responde agora;
-      // senão, a IA dá o gancho inicial
-      await aiReply(first || "olá");
-    } catch {
-      pushBot("Ops, não consegui registrar agora. 🙏 Tente de novo ou fale pelo WhatsApp no topo.");
-    } finally {
-      setSending(false);
-    }
-  }
-
-  // ── Fase 3: conversa com a IA (mesmo agente do WhatsApp) ───────────────
+  // Conversa: SEMPRE atende o pedido (IA responde). Captura o WhatsApp quando
+  // a pessoa mandar e vai pedindo de novo, sem travar.
   async function afterChat(text: string) {
-    // se a pessoa mandar o WhatsApp depois, registra também
     const phone = !gotWhatsapp ? extractPhone(text) : null;
+    const onlyPhone = !!phone && text.replace(/[\d\s\-()+]/g, "").trim() === "";
     if (phone && convId) {
       try {
         await chatSetWhatsapp(convId, phone);
         setGotWhatsapp(true);
       } catch {}
     }
+    if (onlyPhone) {
+      pushBot("Perfeito! 📲 Já anotei seu WhatsApp. Agora me conta: como posso te ajudar? 😊");
+      return;
+    }
+    // atende o que a pessoa pediu (IA dá o orçamento se tiver o consumo)
     await aiReply(text);
+    // de tempos em tempos, pede o WhatsApp de novo (sem encher)
+    if (!phone && !gotWhatsapp) {
+      wppReaskTurn.current += 1;
+      if (wppReaskTurn.current % 2 === 1) {
+        pushBot("Ah, e quando puder me manda seu *WhatsApp com DDD* pra eu registrar seu atendimento 😊📱");
+      }
+    }
   }
 
   // envia a mensagem ao CRM e mostra a resposta da IA
@@ -156,7 +142,6 @@ export function ChatWidget() {
     setInput("");
     pushUser({ kind: "text", text });
     if (phase === "name") await afterName(text);
-    else if (phase === "whatsapp") await afterWhatsapp(text);
     else await afterChat(text);
   }
 
@@ -316,7 +301,7 @@ export function ChatWidget() {
                 }
               }}
               rows={1}
-              placeholder={recording ? "Gravando áudio..." : phase === "name" ? "Digite seu nome..." : phase === "whatsapp" ? "Seu WhatsApp com DDD..." : "Escreva sua mensagem..."}
+              placeholder={recording ? "Gravando áudio..." : phase === "name" ? "Digite seu nome..." : "Escreva sua mensagem..."}
               disabled={recording}
               className="max-h-24 flex-1 resize-none rounded-2xl border border-brand-200 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 disabled:bg-brand-50"
             />
