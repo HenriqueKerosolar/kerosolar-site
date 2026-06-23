@@ -21,8 +21,8 @@ export default function Home() {
           <div className="overflow-hidden rounded-3xl shadow-xl">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/img/solutions-kerosolar.png"
-              alt="Soluções solares KeroSolar"
+              src="/img/equipe-instalacao.webp"
+              alt="Técnicos da KeroSolar instalando painéis solares"
               className="h-full w-full object-cover"
             />
           </div>
