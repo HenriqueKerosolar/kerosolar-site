@@ -26,7 +26,7 @@ async function post(body: Record<string, unknown>) {
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data?.error || `Erro ${res.status}`);
-  return data as { ok?: boolean; convId?: string; leadId?: string; error?: string };
+  return data as { ok?: boolean; convId?: string; leadId?: string; reply?: string; handoff?: boolean; error?: string };
 }
 
 /** Inicia a conversa com o nome do visitante. Retorna o convId. */
@@ -35,9 +35,10 @@ export async function chatStart(visitorName: string, visitorEmail?: string) {
   return r.convId ?? null;
 }
 
-/** Registra uma mensagem do visitante na conversa. */
-export async function chatMessage(convId: string, message: string) {
-  await post({ action: "message", convId, message });
+/** Envia uma mensagem e retorna a resposta da IA (mesmo agente do WhatsApp). */
+export async function chatMessage(convId: string, message: string): Promise<string | null> {
+  const r = await post({ action: "message", convId, message });
+  return r.reply ?? null;
 }
 
 /** Grava o WhatsApp do visitante (dispara o handoff no CRM). */

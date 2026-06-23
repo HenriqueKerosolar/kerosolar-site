@@ -13,7 +13,7 @@ import {
 let _id = 0;
 const nextId = () => `m${++_id}`;
 
-type Phase = "name" | "chat";
+type Phase = "name" | "whatsapp" | "chat";
 
 export function ChatWidget() {
   const [open, setOpen] = useState(false);
@@ -27,9 +27,9 @@ export function ChatWidget() {
   const [phase, setPhase] = useState<Phase>("name");
   const [convId, setConvId] = useState<string | null>(null);
   const [visitorName, setVisitorName] = useState("");
-  const [askedWhatsapp, setAskedWhatsapp] = useState(false);
   const [gotWhatsapp, setGotWhatsapp] = useState(false);
   const pendingFirstMessage = useRef<string | null>(null);
+  const wppAttempts = useRef(0);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -71,28 +71,17 @@ export function ChatWidget() {
     setMessages(init);
   }
 
-  // ── Fase 1: nome → inicia conversa no CRM (e envia a 1ª mensagem, se houver)
-  async function submitName(name: string) {
-    pushUser({ kind: "text", text: name });
+  // ── Fase 1: nome → inicia a conversa no CRM, depois pede o WhatsApp ─────
+  async function afterName(name: string) {
     setVisitorName(name);
     setSending(true);
     try {
       const id = await chatStart(name);
       setConvId(id);
-      setPhase("chat");
-      const first = pendingFirstMessage.current;
-      if (id && first) {
-        await chatMessage(id, first);
-        pendingFirstMessage.current = null;
-        setAskedWhatsapp(true);
-        pushBot(
-          `Prazer, ${name.split(" ")[0]}! 😊 Já registrei sua mensagem. Pra um especialista continuar seu atendimento, me passa seu WhatsApp com DDD? 📱`,
-        );
-      } else {
-        pushBot(
-          `Prazer, ${name.split(" ")[0]}! 😊 Como posso ajudar — orçamento, dúvida...? Pode escrever, mandar áudio ou a foto da sua conta de luz.`,
-        );
-      }
+      setPhase("whatsapp");
+      pushBot(
+        `Prazer, ${name.split(" ")[0]}! 😊 Antes de tudo, me passa seu *WhatsApp com DDD*? Assim garanto seu atendimento e um especialista pode te chamar por lá também. 📱`,
+      );
     } catch {
       pushBot("Tivemos um probleminha para iniciar o atendimento. 🙏 Se preferir, fale agora pelo WhatsApp no botão do topo do chat.");
     } finally {
@@ -100,27 +89,62 @@ export function ChatWidget() {
     }
   }
 
-  // ── Fase 2: mensagens → CRM (detecta WhatsApp p/ handoff) ──────────────
-  async function sendToConversation(text: string) {
+  // ── Fase 2: WhatsApp primeiro (prioridade) ─────────────────────────────
+  async function afterWhatsapp(text: string) {
+    if (!convId) return;
+    const phone = extractPhone(text);
+    if (!phone) {
+      wppAttempts.current += 1;
+      if (wppAttempts.current < 2) {
+        pushBot("É rapidinho 😊 me manda seu WhatsApp com DDD — ex.: *21 99999-8888*.");
+        return;
+      }
+      // depois de 2 tentativas, segue o atendimento pela IA mesmo sem o número
+      pushBot("Sem problema! Vou te ajudar por aqui então 😊");
+      setPhase("chat");
+      await aiReply(text);
+      return;
+    }
+    setSending(true);
+    try {
+      await chatSetWhatsapp(convId, phone);
+      setGotWhatsapp(true);
+      setPhase("chat");
+      pushBot("Perfeito! 📲 Já anotei seu WhatsApp.");
+      const first = pendingFirstMessage.current;
+      pendingFirstMessage.current = null;
+      // se a pessoa já tinha escrito algo na caixinha, a IA responde agora;
+      // senão, a IA dá o gancho inicial
+      await aiReply(first || "olá");
+    } catch {
+      pushBot("Ops, não consegui registrar agora. 🙏 Tente de novo ou fale pelo WhatsApp no topo.");
+    } finally {
+      setSending(false);
+    }
+  }
+
+  // ── Fase 3: conversa com a IA (mesmo agente do WhatsApp) ───────────────
+  async function afterChat(text: string) {
+    // se a pessoa mandar o WhatsApp depois, registra também
+    const phone = !gotWhatsapp ? extractPhone(text) : null;
+    if (phone && convId) {
+      try {
+        await chatSetWhatsapp(convId, phone);
+        setGotWhatsapp(true);
+      } catch {}
+    }
+    await aiReply(text);
+  }
+
+  // envia a mensagem ao CRM e mostra a resposta da IA
+  async function aiReply(text: string) {
     if (!convId) return;
     setSending(true);
     try {
-      const phone = extractPhone(text);
-      if (phone && !gotWhatsapp) {
-        await chatSetWhatsapp(convId, phone);
-        setGotWhatsapp(true);
-        pushBot(`Perfeito! 📲 Um especialista da KeroSolar já vai te chamar no seu WhatsApp. Obrigado, ${visitorName.split(" ")[0]}!`);
-      } else {
-        await chatMessage(convId, text);
-        if (!askedWhatsapp && !gotWhatsapp) {
-          setAskedWhatsapp(true);
-          pushBot("Anotado! 👍 Pra um especialista continuar seu atendimento, me passa seu WhatsApp com DDD? 📱");
-        } else {
-          pushBot("Recebido! 👍 Pode continuar, estou registrando tudo para o nosso time.");
-        }
-      }
+      const reply = await chatMessage(convId, text);
+      pushBot(reply || "Recebido! 👍 Um especialista vai te responder em instantes.");
     } catch {
-      pushBot("Ops, não consegui enviar agora. 🙏 Tente novamente ou fale pelo WhatsApp no topo do chat.");
+      pushBot("Ops, não consegui responder agora. 🙏 Tente de novo ou fale pelo WhatsApp no topo do chat.");
     } finally {
       setSending(false);
     }
@@ -130,8 +154,10 @@ export function ChatWidget() {
     const text = input.trim();
     if (!text || sending) return;
     setInput("");
-    if (phase === "name") await submitName(text);
-    else await sendToConversation(text);
+    pushUser({ kind: "text", text });
+    if (phase === "name") await afterName(text);
+    else if (phase === "whatsapp") await afterWhatsapp(text);
+    else await afterChat(text);
   }
 
   function handlePhoto(e: React.ChangeEvent<HTMLInputElement>) {
@@ -172,8 +198,8 @@ export function ChatWidget() {
     if (!convId) return;
     setSending(true);
     try {
-      await chatMessage(convId, note);
-      pushBot("Recebido! 👍 Já encaminhei para o nosso time.");
+      const reply = await chatMessage(convId, note);
+      pushBot(reply || "Recebido! 👍 Já encaminhei para o nosso time.");
     } catch {
       pushBot("Não consegui enviar o arquivo agora. 🙏 Tente pelo WhatsApp no topo do chat.");
     } finally {
@@ -275,7 +301,7 @@ export function ChatWidget() {
 
           <div className="flex items-end gap-2 border-t border-brand-100 bg-white p-3">
             <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
-            <IconButton label="Enviar foto" onClick={() => fileInputRef.current?.click()} disabled={sending || recording || phase === "name"}>
+            <IconButton label="Enviar foto" onClick={() => fileInputRef.current?.click()} disabled={sending || recording || phase !== "chat"}>
               <PhotoIcon />
             </IconButton>
 
@@ -290,12 +316,12 @@ export function ChatWidget() {
                 }
               }}
               rows={1}
-              placeholder={recording ? "Gravando áudio..." : phase === "name" ? "Digite seu nome..." : "Escreva sua mensagem..."}
+              placeholder={recording ? "Gravando áudio..." : phase === "name" ? "Digite seu nome..." : phase === "whatsapp" ? "Seu WhatsApp com DDD..." : "Escreva sua mensagem..."}
               disabled={recording}
               className="max-h-24 flex-1 resize-none rounded-2xl border border-brand-200 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 disabled:bg-brand-50"
             />
 
-            {input.trim() || phase === "name" ? (
+            {input.trim() || phase !== "chat" ? (
               <IconButton label="Enviar" onClick={handleSend} disabled={sending || !input.trim()} primary>
                 <SendIcon />
               </IconButton>
