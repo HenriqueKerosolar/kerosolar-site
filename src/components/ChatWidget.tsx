@@ -183,41 +183,63 @@ export function ChatWidget() {
 
   return (
     <>
-      {/* Lançador: barra com CAIXA DE TEXTO (convida a digitar na hora) */}
+      {/* Lançador: caixa de chat no site + botão do WhatsApp (separados) */}
       {!open && (
-        <div className="fixed bottom-5 right-5 z-50 w-[min(20.5rem,calc(100vw-2.5rem))]">
-          <p className="ks-anim-pop mb-2 ml-1 text-xs font-medium text-brand-700/80 drop-shadow-sm">
-            <span className="mr-1 inline-block h-2 w-2 rounded-full bg-green-500 align-middle" />
-            Atendimento online — fale agora
-          </p>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const t = launcherText.trim();
-              setLauncherText("");
-              openChat(t || undefined);
-            }}
-            className="flex items-center gap-2 rounded-full bg-white py-2 pl-2.5 pr-2 shadow-2xl ring-1 ring-brand-100 transition focus-within:ring-2 focus-within:ring-sun-300"
-          >
-            <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sun-500 text-lg">
-              ☀
-              <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white bg-green-400" />
-            </span>
-            <input
-              value={launcherText}
-              onChange={(e) => setLauncherText(e.target.value)}
-              placeholder="Escreva aqui e fale com a gente..."
-              aria-label="Escreva sua mensagem para o atendimento KeroSolar"
-              className="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-muted"
-            />
-            <button
-              type="submit"
-              aria-label="Enviar e abrir o chat"
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sun-500 text-brand-900 transition hover:bg-sun-400"
+        <div className="fixed bottom-5 right-5 z-50 flex w-[min(20.5rem,calc(100vw-2.5rem))] flex-col items-end gap-3">
+          {/* 1) Chat no próprio site — caixa de texto */}
+          <div className="ks-anim-pop w-full">
+            <p className="mb-2 ml-1 text-xs font-medium text-brand-700/80 drop-shadow-sm">
+              <span className="mr-1 inline-block h-2 w-2 animate-pulse rounded-full bg-green-500 align-middle" />
+              Atendimento online — responde na hora
+            </p>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const t = launcherText.trim();
+                setLauncherText("");
+                openChat(t || undefined);
+              }}
+              className="flex items-center gap-2 rounded-full bg-white py-2 pl-2.5 pr-2 shadow-2xl ring-1 ring-brand-100 transition focus-within:ring-2 focus-within:ring-sun-300"
             >
-              <SendIcon />
-            </button>
-          </form>
+              <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sun-500 text-lg">
+                ☀
+                <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white bg-green-400" />
+              </span>
+              <input
+                value={launcherText}
+                onChange={(e) => setLauncherText(e.target.value)}
+                placeholder="Escreva aqui e fale com a gente..."
+                aria-label="Escreva sua mensagem para o atendimento KeroSolar"
+                className="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-muted"
+              />
+              <button
+                type="submit"
+                aria-label="Enviar e abrir o chat"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sun-500 text-brand-900 transition hover:bg-sun-400"
+              >
+                <SendIcon />
+              </button>
+            </form>
+          </div>
+
+          {/* 2) WhatsApp — separado, com rótulo e pulsar */}
+          <a
+            href={company.whatsapp}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Falar no WhatsApp"
+            className="group flex items-center gap-2.5"
+          >
+            <span className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-[#0a7d56] shadow-md ring-1 ring-black/5">
+              Prefere o WhatsApp?
+            </span>
+            <span className="relative flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] shadow-lg shadow-black/25 transition group-hover:scale-105">
+              <span className="absolute inset-0 animate-ping rounded-full bg-[#25D366] opacity-40" />
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="white" className="relative" aria-hidden>
+                <path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.515 5.26l-.999 3.648 3.973-1.052zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z" />
+              </svg>
+            </span>
+          </a>
         </div>
       )}
 
