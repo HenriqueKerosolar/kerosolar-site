@@ -13,7 +13,7 @@ export default function AgroPage() {
       eyebrow="Agronegócio"
       title="Energia solar para o homem do campo"
       subtitle="Onde o agro precisar de energia, a KeroSolar tem a solução com menor custo e pagamento financiado."
-      image="/img/agro-solar-rural.webp"
+      image="/img/agro-instalacao-rural.webp"
       imageAlt="Instalação de energia solar em propriedade rural"
     >
       <p>
