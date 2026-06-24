@@ -1,5 +1,31 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+
+export const metadata: Metadata = {
+  title: "KeroSolar — Energia Solar Fotovoltaica | Geradores, Projeto e Homologação",
+  description:
+    "KeroSolar: venda, instalação e homologação de geradores solares em Rio de Janeiro e todo o Brasil. On-Grid, Off-Grid, Híbridos. Mais de 300 projetos, 5,0 ★ no Google. Reduza sua conta em até 95%.",
+  keywords: [
+    "energia solar Rio de Janeiro",
+    "instalação energia solar RJ",
+    "gerador solar residencial",
+    "painel solar preço",
+    "kit solar fotovoltaico",
+    "homologação solar",
+    "energia solar empresas",
+    "usina solar RJ",
+    "KeroSolar",
+  ],
+  alternates: { canonical: "https://www.kerosolar.com.br" },
+  openGraph: {
+    title: "KeroSolar — Energia Solar | +300 projetos, 5,0 ★ no Google",
+    description:
+      "Reduza sua conta de luz em até 95% com energia solar. Projeto, instalação e homologação com equipe especializada. Solicite seu orçamento grátis.",
+    url: "https://www.kerosolar.com.br",
+    images: [{ url: "/img/solar-panel.webp", width: 1200, height: 630, alt: "KeroSolar painéis solares instalados" }],
+  },
+};
 import { Hero } from "@/components/Hero";
 import { PartnerLogos } from "@/components/PartnerLogos";
 import { ServicesStrip } from "@/components/ServicesStrip";

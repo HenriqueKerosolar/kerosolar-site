@@ -4,9 +4,16 @@ import { PageHero } from "@/components/PageHero";
 import { QuoteCta } from "@/components/QuoteCta";
 
 export const metadata: Metadata = {
-  title: "Geradores Solares — On-Grid, Off-Grid e Híbridos",
+  title: "Geradores Solares — On-Grid, Off-Grid e Híbridos | KeroSolar",
   description:
-    "Conheça os geradores solares On-Grid, Off-Grid e Híbridos da KeroSolar: inversores de string, micro-inversores, string otimizado e sistemas para todas as necessidades.",
+    "Geradores solares On-Grid, Off-Grid e Híbridos com instalação e homologação em todo o Brasil. Inversores de string, micro-inversores e string otimizado. Solicite seu orçamento gratuito.",
+  keywords: ["gerador solar on-grid", "gerador solar off-grid", "inversor solar", "kit solar fotovoltaico", "micro-inversor solar", "usina solar residencial"],
+  alternates: { canonical: "https://www.kerosolar.com.br/geradores" },
+  openGraph: {
+    title: "Geradores Solares On-Grid, Off-Grid e Híbridos — KeroSolar",
+    description: "Escolha o gerador solar ideal para sua casa, empresa ou propriedade rural. Orçamento grátis e financiamento disponível.",
+    images: [{ url: "/img/kit-offgrid.webp", width: 1200, height: 630 }],
+  },
 };
 
 const onGridTypes = [

@@ -2,9 +2,16 @@ import type { Metadata } from "next";
 import { SolutionPage } from "@/components/SolutionPage";
 
 export const metadata: Metadata = {
-  title: "Energia Solar para Negócios e Indústrias",
+  title: "Energia Solar para Empresas e Indústrias — Reduza Custos | KeroSolar",
   description:
-    "Soluções solares para empresas de todos os portes: redução de demanda e hora-ponta, no-breaks solares, usinas para cooperativas, consórcios e geração remota.",
+    "Energia solar para empresas, comércios e indústrias: reduza a conta de luz em até 95%, elimine a hora-ponta e aumente a competitividade. Projeto, financiamento e homologação completos.",
+  keywords: ["energia solar para empresas", "usina solar comercial", "solar industrial", "energia solar CNPJ", "gerador solar comercial", "redução de demanda energia"],
+  alternates: { canonical: "https://www.kerosolar.com.br/negocios" },
+  openGraph: {
+    title: "Energia Solar para Empresas — até 95% de economia na conta",
+    description: "KeroSolar: solução completa em energia solar para negócios de todos os portes. Orçamento gratuito e financiamento disponível.",
+    images: [{ url: "/img/solar-panel.webp", width: 1200, height: 630 }],
+  },
 };
 
 export default function NegociosPage() {

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { PageHero } from "./PageHero";
 import { Prose } from "./Prose";
 import { QuoteCta } from "./QuoteCta";
@@ -37,11 +38,13 @@ export function SolutionPage({
                 imageContain ? "flex items-center justify-center bg-white p-4 ring-1 ring-brand-100" : ""
               }`}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={image}
                 alt={imageAlt ?? title}
+                width={600}
+                height={500}
                 className={`h-full w-full ${imageContain ? "object-contain" : "object-cover"}`}
+                sizes="(max-width: 1024px) 100vw, 40vw"
               />
             </div>
           )}

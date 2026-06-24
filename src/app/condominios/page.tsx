@@ -2,9 +2,16 @@ import type { Metadata } from "next";
 import { SolutionPage } from "@/components/SolutionPage";
 
 export const metadata: Metadata = {
-  title: "Energia Solar para Condomínios",
+  title: "Energia Solar para Condomínios — Reduza até 95% da Conta | KeroSolar",
   description:
-    "Financiamento e implantação de usinas solares para condomínios, reduzindo em até 95% a despesa com energia. Síndicos não se tornam avalistas.",
+    "Usina solar para condomínio: reduza até 95% das despesas com energia. Financiamento disponível, síndicos não viram avalistas. A KeroSolar cuida de todo o processo — do projeto à homologação.",
+  keywords: ["energia solar condomínio", "usina solar condomínio", "solar para síndico", "energia solar área comum", "gerador solar prédio"],
+  alternates: { canonical: "https://www.kerosolar.com.br/condominios" },
+  openGraph: {
+    title: "Energia Solar para Condomínios — até 95% de economia",
+    description: "Financiamento sem avalista, projeto e homologação completos. Solicite uma análise gratuita para o seu condomínio.",
+    images: [{ url: "/img/solar-panel.webp", width: 1200, height: 630 }],
+  },
 };
 
 export default function CondominiosPage() {

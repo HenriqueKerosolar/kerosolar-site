@@ -6,9 +6,15 @@ import { QuoteCta } from "@/components/QuoteCta";
 import { company } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Sobre a KeroSolar",
+  title: "Sobre a KeroSolar — Empresa de Energia Solar no Rio de Janeiro",
   description:
-    "A KeroSolar busca o melhor retorno para o seu investimento em energia solar fotovoltaica, com retorno mínimo de 24% ao ano e payback entre 3 e 5 anos.",
+    "Conheça a KeroSolar: empresa especializada em energia solar fotovoltaica com mais de 300 projetos concluídos desde 2019. Nota 5,0 ★ no Google. Payback entre 2 e 3 anos, retorno mínimo de 24% ao ano.",
+  alternates: { canonical: "https://www.kerosolar.com.br/sobre" },
+  openGraph: {
+    title: "Sobre a KeroSolar — +300 projetos, 5,0 ★",
+    description: "Empresa especializada em energia solar no RJ desde 2019. Projeto, instalação e homologação com equipe técnica certificada.",
+    images: [{ url: "/img/solar-panel.webp", width: 1200, height: 630 }],
+  },
 };
 
 export default function SobrePage() {
