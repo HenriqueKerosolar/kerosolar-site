@@ -168,8 +168,8 @@ export function ChatWidget() {
         <div className="fixed bottom-5 right-5 z-50 flex w-[min(20.5rem,calc(100vw-2.5rem))] flex-col items-end gap-3">
           {/* 1) Chat no próprio site — caixa de texto */}
           <div className="ks-anim-pop w-full">
-            <p className="mb-2 ml-1 text-xs font-medium text-brand-700/80 drop-shadow-sm">
-              <span className="mr-1 inline-block h-2 w-2 animate-pulse rounded-full bg-green-500 align-middle" />
+            <p className="mb-2 ml-1 w-fit rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-gray-700 shadow ring-1 ring-black/10">
+              <span className="mr-1.5 inline-block h-2 w-2 animate-pulse rounded-full bg-green-500 align-middle" />
               Atendimento online — responde na hora
             </p>
             <form
