@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { company } from "@/lib/site";
 import { WhatsappIcon } from "./WhatsappIcon";
 
@@ -53,11 +54,14 @@ export function Hero() {
         {/* Visual */}
         <div className="relative">
           <div className="overflow-hidden rounded-3xl shadow-2xl ring-1 ring-white/10">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src="/img/solar-panel.webp"
               alt="Painéis solares instalados pela KeroSolar"
+              width={800}
+              height={600}
               className="h-full w-full object-cover"
+              priority
+              sizes="(max-width: 1024px) 100vw, 50vw"
             />
           </div>
           <div className="absolute -bottom-6 -left-6 hidden rounded-2xl bg-white p-5 shadow-xl sm:block">

@@ -72,6 +72,7 @@ export function GuideBanner() {
                 width={760}
                 height={1134}
                 className="h-auto w-52 rounded-xl shadow-2xl ring-1 ring-black/5 sm:w-60"
+                sizes="(max-width: 640px) 208px, 240px"
               />
             </div>
           </div>

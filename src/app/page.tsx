@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Hero } from "@/components/Hero";
 import { PartnerLogos } from "@/components/PartnerLogos";
 import { ServicesStrip } from "@/components/ServicesStrip";
@@ -19,11 +20,13 @@ export default function Home() {
       <section className="py-16 sm:py-20">
         <div className="container-px grid items-center gap-12 lg:grid-cols-2">
           <div className="overflow-hidden rounded-3xl shadow-xl">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src="/img/equipe-instalacao.webp"
               alt="Técnicos da KeroSolar instalando painéis solares"
+              width={800}
+              height={600}
               className="h-full w-full object-cover"
+              sizes="(max-width: 1024px) 100vw, 50vw"
             />
           </div>
           <div>

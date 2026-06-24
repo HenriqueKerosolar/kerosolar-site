@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { solutions } from "@/lib/site";
 
 export function SolutionCards() {
@@ -26,11 +27,13 @@ export function SolutionCards() {
               className="group overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
             >
               <div className="aspect-[4/3] overflow-hidden">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={s.img}
                   alt={s.title}
+                  width={400}
+                  height={300}
                   className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                 />
               </div>
               <div className="p-5">

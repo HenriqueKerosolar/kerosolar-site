@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { partners } from "@/lib/site";
 
 export function PartnerLogos() {
@@ -10,11 +11,13 @@ export function PartnerLogos() {
         <div className="mt-8 grid grid-cols-2 items-center gap-x-8 gap-y-6 sm:grid-cols-4 lg:grid-cols-8">
           {partners.map((p) => (
             <div key={p.name} className="flex items-center justify-center">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+                <Image
                 src={p.img}
                 alt={p.name}
+                width={120}
+                height={36}
                 className="h-9 w-auto max-w-[120px] object-contain opacity-70 grayscale transition hover:opacity-100 hover:grayscale-0"
+                sizes="120px"
               />
             </div>
           ))}
