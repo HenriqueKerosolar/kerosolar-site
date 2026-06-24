@@ -56,8 +56,8 @@ export function Hero() {
         <div className="relative">
           <div className="overflow-hidden rounded-3xl shadow-2xl ring-1 ring-white/10">
             <Image
-              src="/img/solar-panel.webp"
-              alt="Painéis solares instalados pela KeroSolar"
+              src="/img/hero-instalacao.jpg"
+              alt="Equipe KeroSolar instalando painéis solares"
               width={800}
               height={600}
               className="h-full w-full object-cover"
