@@ -4,9 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { OrganizationJsonLd } from "@/components/JsonLd";
-import dynamic from "next/dynamic";
-
-const ChatWidget = dynamic(() => import("@/components/ChatWidget").then(m => m.ChatWidget), { ssr: false });
+import { ChatWidgetLoader } from "@/components/ChatWidgetLoader";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -93,7 +91,7 @@ export default function RootLayout({
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
-        <ChatWidget />
+        <ChatWidgetLoader />
       </body>
     </html>
   );
