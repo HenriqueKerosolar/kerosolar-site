@@ -44,8 +44,9 @@ export function Hero() {
             </Link>
           </div>
 
-          <dl className="mt-12 grid max-w-md grid-cols-3 gap-6">
-            <Stat value={`${company.stats.projects}+`} label="Projetos completados" />
+          <dl className="mt-12 grid max-w-lg grid-cols-4 gap-6">
+            <Stat value="5★" label="Nota máxima no Google" />
+            <Stat value={`${company.stats.projects}+`} label="Famílias e empresas atendidas" />
             <Stat value="95%" label="Economia na conta de luz" />
             <Stat value="24%+" label="Retorno ao ano" />
           </dl>
