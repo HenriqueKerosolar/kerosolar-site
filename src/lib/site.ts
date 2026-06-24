@@ -22,7 +22,7 @@ export const company = {
   // Avaliações do Google via Featurable (grátis). Cole aqui o ID do widget
   // gerado em https://featurable.com (Dashboard → Widget → aba API → Featurable ID).
   // Enquanto estiver vazio, o site mostra os depoimentos estáticos de fallback.
-  googleReviewsWidgetId: "f66c8426-48c2-4b81-9fdb-03870d2f3cf8",
+  googleReviewsWidgetId: "",
   // Link do perfil no Google (botão "Ver todas as avaliações"). Quando tiver o
   // Place ID, troque por: https://search.google.com/local/reviews?placeid=SEU_PLACE_ID
   googleReviewsUrl:
