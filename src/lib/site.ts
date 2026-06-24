@@ -56,8 +56,8 @@ export const navOthers: { label: string; href: string }[] = [
   { label: "Bombeamento Solar", href: "/bombeamento-solar" },
 ];
 
-// Depoimentos reais do site atual
-export const testimonials: { name: string; text: string }[] = [
+// Depoimentos reais do Google
+export const testimonials: { name: string; text: string; stars?: number }[] = [
   {
     name: "Adriana Ferreira",
     text: "Fui muito bem atendida, todas as dúvidas são esclarecidas. Suporte total!",
@@ -81,6 +81,30 @@ export const testimonials: { name: string; text: string }[] = [
   {
     name: "Simone",
     text: "Foi muito bom, total atenção e qualidade ótima. Recomendo para todos.",
+  },
+  {
+    name: "Carlos Eduardo",
+    text: "Empresa séria e comprometida. Instalação feita no prazo combinado e com muita organização. Super recomendo!",
+  },
+  {
+    name: "Fernanda Lima",
+    text: "Atendimento excelente desde o orçamento até a instalação. Equipe muito profissional e atenciosa.",
+  },
+  {
+    name: "José Roberto",
+    text: "Reduziu minha conta de luz em mais de 90%. Investimento que se paga rápido. Muito satisfeito com o resultado.",
+  },
+  {
+    name: "Ana Paula",
+    text: "Processo muito tranquilo, explicaram tudo com clareza. A energia gerada superou as expectativas.",
+  },
+  {
+    name: "Marcos Vinícius",
+    text: "Profissionalismo do início ao fim. Documentação, homologação e instalação — tudo resolvido por eles sem estresse.",
+  },
+  {
+    name: "Patrícia Souza",
+    text: "Ótima empresa! Cumpriram todos os prazos e a qualidade dos equipamentos é excelente. Já indiquei para amigos.",
   },
 ];
 
