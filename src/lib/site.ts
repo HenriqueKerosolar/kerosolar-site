@@ -56,8 +56,100 @@ export const navOthers: { label: string; href: string }[] = [
   { label: "Bombeamento Solar", href: "/bombeamento-solar" },
 ];
 
-// Depoimentos reais do Google
+// Avaliações reais do Google (5,0 — 76 avaliações)
 export const testimonials: { name: string; text: string; stars?: number }[] = [
+  {
+    name: "Paulo Modesto",
+    text: "A Kerosolar foi a melhor experiência que já tive como cliente. Prestaram excelente atendimento desde o primeiro contato ao pós venda. Fiz várias pesquisas de mercado e essa foi a única empresa que além de ter o melhor preço, foi a que teve o melhor atendimento. A instalação ocorreu antes do prazo e o time que instalou é TOP. Obrigado Henrique e a toda a sua equipe!!!",
+  },
+  {
+    name: "Alexandre Volkmann",
+    text: "No começo fiquei um pouco receoso por se tratar de um investimento relativamente caro, porém os funcionários sanaram todas as minhas dúvidas e desconfianças, foram super atenciosos e pacientes. Com certeza recomendo. Muito satisfeito com os serviços prestados não só durante a venda e instalação mas também com o atendimento pós venda.",
+  },
+  {
+    name: "Alexandre Pita",
+    text: "Clareza, profissionalismo e cordialidade desde a visita para orçamento até a instalação. Tive um problema com meu inversor e me foi dado todo o suporte. Todos os questionamentos foram respondidos prontamente até a solução. Super indico a empresa!",
+  },
+  {
+    name: "Alice Rangel",
+    text: "Depois de muito pesquisar, encontrei essa empresa e desde o primeiro contato gostei muito do atendimento. O consultor Henrique veio à minha residência e sanou todas as dúvidas. Contrato fechado e em 30 dias o equipamento foi instalado. Estamos muito satisfeitos com a empresa e o atendimento dispensado.",
+  },
+  {
+    name: "Admario Cardeal",
+    text: "Muito bom produto, as placas estão gerando muito bem. Foram prometidas 12 placas de 550 e vieram 12 de 570, o conversor veio melhor também. Estou muito satisfeito. Agradeço ao sr Henrique que me deu suporte sempre quando precisei.",
+  },
+  {
+    name: "Cristiane Silva",
+    text: "Graças a Deus está sendo um dos melhores investimentos que fizemos, é só alegria. O atendimento é rápido e preciso, não tenho o que reclamar. Parabéns a todos os envolvidos!",
+  },
+  {
+    name: "Queiroz Piloto",
+    text: "Equipamento funcionando sem problemas! Instalação rápida e profissional! Sistema super inteligente! Tratamento vip, tanto dos instaladores quanto do técnico. Melhor investimento! Não tenham dúvidas, podem confiar!",
+  },
+  {
+    name: "Marcelo Coutinho",
+    text: "Excelente, recomendo a todos sem exceção, podem confiar. Suporte do início ao fim, educação e ótimos conhecimentos técnicos.",
+  },
+  {
+    name: "Pra. Daniele Rodrigues",
+    text: "Ótimo investimento, gostei muito da empresa, contratei e estão aprovados. Super indico essa empresa, dão atenção e suporte antes e depois de instalado.",
+  },
+  {
+    name: "Roberta Assis",
+    text: "A empresa cumpriu com todo combinado, instalou dentro do prazo, está dando a devida assistência em todo processo. Recomendo!",
+  },
+  {
+    name: "Tadeu Arruda",
+    text: "Serviço rápido e eficaz. Atendimento com presteza, prestando todo suporte e esclarecimentos necessários, principalmente no pós venda garantindo os serviços e equipamentos fornecidos.",
+  },
+  {
+    name: "Daniel Araujo",
+    text: "Muito satisfatória a experiência com a empresa. Funcionários extremamente cuidadosos com a parte estética do ambiente interno além de presteza em todas as etapas do serviço.",
+  },
+  {
+    name: "Renata e Diego Pisete",
+    text: "Serviço de excelência, tudo conforme combinado. Todos os imprevistos foram resolvidos de imediato.",
+  },
+  {
+    name: "Danilo Geraldo Fernandes",
+    text: "Profissional e pontual. Até o momento, seis meses de adesão, muito atencioso e esclarecedor. Instalação e homologação... muito satisfeito!",
+  },
+  {
+    name: "Luiz da Silva Teixeira",
+    text: "Muito satisfeito com todo desempenho da equipe, do início do projeto até sua conclusão. Obrigado a todos que participaram da instalação.",
+  },
+  {
+    name: "Nilson Dias",
+    text: "Foi muito bom, cumpriram o combinado, não tivemos estresse. Estamos felizes com o trabalho. Só agradecer à equipe muito eficiente.",
+  },
+  {
+    name: "Cirena Fonseca",
+    text: "Excelentes profissionais, educados, capacitados, dou nota 1000. Super recomendo.",
+  },
+  {
+    name: "Carlos Fiuza",
+    text: "Ótimo serviço, equipe atenciosa e com ótimo conhecimento técnico!",
+  },
+  {
+    name: "Bruno Cardoso",
+    text: "A KeroSolar é uma ótima empresa. Recomendo o ótimo serviço prestado e o suporte técnico tirando todas as dúvidas.",
+  },
+  {
+    name: "Angelo Bonfá",
+    text: "Excelente suporte, atendimento e execução.",
+  },
+  {
+    name: "Jorge Madeira",
+    text: "Foi tudo muito bem explicado e atendeu as minhas expectativas. Foi excelente.",
+  },
+  {
+    name: "Edvaldo Pedro",
+    text: "Muito bom o atendimento. No começo fiquei com medo pois não conhecia, mas depois que vieram até minha casa, explicaram tudo e fiz o pagamento à vista. Muito feliz com o resultado!",
+  },
+  {
+    name: "Vilmar Brito",
+    text: "Obrigado a todos envolvidos. Estou muito satisfeito com o trabalho de vocês.",
+  },
   {
     name: "Adriana Ferreira",
     text: "Fui muito bem atendida, todas as dúvidas são esclarecidas. Suporte total!",
@@ -83,28 +175,8 @@ export const testimonials: { name: string; text: string; stars?: number }[] = [
     text: "Foi muito bom, total atenção e qualidade ótima. Recomendo para todos.",
   },
   {
-    name: "Carlos Eduardo",
-    text: "Empresa séria e comprometida. Instalação feita no prazo combinado e com muita organização. Super recomendo!",
-  },
-  {
-    name: "Fernanda Lima",
-    text: "Atendimento excelente desde o orçamento até a instalação. Equipe muito profissional e atenciosa.",
-  },
-  {
-    name: "José Roberto",
-    text: "Reduziu minha conta de luz em mais de 90%. Investimento que se paga rápido. Muito satisfeito com o resultado.",
-  },
-  {
-    name: "Ana Paula",
-    text: "Processo muito tranquilo, explicaram tudo com clareza. A energia gerada superou as expectativas.",
-  },
-  {
-    name: "Marcos Vinícius",
-    text: "Profissionalismo do início ao fim. Documentação, homologação e instalação — tudo resolvido por eles sem estresse.",
-  },
-  {
-    name: "Patrícia Souza",
-    text: "Ótima empresa! Cumpriram todos os prazos e a qualidade dos equipamentos é excelente. Já indiquei para amigos.",
+    name: "Carlos Henrique Baptista",
+    text: "Muito bom serviço, ficou muito bom!",
   },
 ];
 
