@@ -92,6 +92,8 @@ export default function RootLayout({
         <main className="flex-1">{children}</main>
         <Footer />
         <ChatWidgetLoader />
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script src="https://mind-marketing.vercel.app/heatmap.js" data-workspace-id="9b1f177e-9bcf-44da-93e9-53aa994ab9ae" />
       </body>
     </html>
   );
