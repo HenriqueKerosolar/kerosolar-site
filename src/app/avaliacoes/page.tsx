@@ -4,6 +4,7 @@ import { Reviews } from "@/components/Reviews";
 import { QuoteCta } from "@/components/QuoteCta";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "https://www.kerosolar.com.br/avaliacoes" },
   title: "Avaliações de Clientes",
   description:
     "Veja o que os clientes da KeroSolar dizem sobre o atendimento, a qualidade técnica e a execução dos projetos de energia solar.",

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SolutionPage } from "@/components/SolutionPage";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "https://www.kerosolar.com.br/revenda" },
   title: "Revenda e Parcerias",
   description:
     "Seja parceiro KeroSolar: vendedores, instaladores e integradores. Treinamento, comissionamento e indicação de clientes na sua região.",

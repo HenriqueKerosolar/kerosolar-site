@@ -4,6 +4,7 @@ import { Prose } from "@/components/Prose";
 import { QuoteCta } from "@/components/QuoteCta";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "https://www.kerosolar.com.br/guia-orcamento" },
   title: "Como Entender um Orçamento de Gerador Solar",
   description:
     "Guia completo para comparar propostas de energia solar: entenda kWp, kWh, kVA, sobredimensionamento de inversores e como evitar armadilhas ao comprar um gerador solar.",

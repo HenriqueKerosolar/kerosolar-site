@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SolutionPage } from "@/components/SolutionPage";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "https://www.kerosolar.com.br/no-breaks" },
   title: "No-breaks Solares",
   description:
     "No-breaks solares que se pagam: protegem e suprem a falta de energia, geram parte da energia consumida e prolongam a vida das baterias. Muito superiores aos no-breaks tradicionais.",

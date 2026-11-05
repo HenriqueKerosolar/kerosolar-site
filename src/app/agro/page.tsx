@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SolutionPage } from "@/components/SolutionPage";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "https://www.kerosolar.com.br/agro" },
   title: "Energia Solar para o Agronegócio",
   description:
     "Soluções solares para o agro: irrigação, bombeamento, refrigeração, automação e energia para áreas remotas sem acesso à rede tradicional.",

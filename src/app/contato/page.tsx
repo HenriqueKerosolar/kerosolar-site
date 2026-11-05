@@ -4,6 +4,7 @@ import { QuoteForm } from "@/components/QuoteForm";
 import { company } from "@/lib/site";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "https://www.kerosolar.com.br/contato" },
   title: "Contato",
   description:
     "Fale com a KeroSolar: telefone, e-mail e WhatsApp. Solicite um orçamento de energia solar fotovoltaica sem compromisso.",

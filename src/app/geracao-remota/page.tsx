@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SolutionPage } from "@/components/SolutionPage";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "https://www.kerosolar.com.br/geracao-remota" },
   title: "Geração Remota de Energia Solar",
   description:
     "Modalidades de geração remota: pessoa física/jurídica, condomínios, cooperativas, consórcios e fazendas solares. A KeroSolar cuida de todo o processo.",

@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { OrganizationJsonLd } from "@/components/JsonLd";
 import { ChatWidgetLoader } from "@/components/ChatWidgetLoader";
+import { GoogleTagManagerNoScript, GoogleTagManagerScript } from "@/components/GoogleTagManager";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -73,9 +74,10 @@ export const metadata: Metadata = {
       "Geradores solares On-Grid, Off-Grid e Híbridos. Projeto, instalação e homologação. Mais de 300 projetos e 5,0 ★ no Google.",
     images: ["/img/solar-panel.webp"],
   },
-  alternates: {
-    canonical: "https://www.kerosolar.com.br",
-  },
+  // Sem canonical aqui de propósito: cada página define o seu. Um canonical no layout fazia todas as páginas sem canonical
+  // próprio apontarem para a home (o Google as trataria como cópia da página inicial).
+  // Verificação do Google Search Console: só entra quando NEXT_PUBLIC_GSC_VERIFICATION estiver definida.
+  ...(process.env.NEXT_PUBLIC_GSC_VERIFICATION ? { verification: { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION } } : {}),
 };
 
 export default function RootLayout({
@@ -87,6 +89,8 @@ export default function RootLayout({
       className={`${poppins.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-white">
+        <GoogleTagManagerScript />
+        <GoogleTagManagerNoScript />
         <OrganizationJsonLd />
         <Header />
         <main className="flex-1">{children}</main>
