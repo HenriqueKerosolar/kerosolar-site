@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { OrganizationJsonLd } from "@/components/JsonLd";
+import { AttributionCapture } from "@/components/AttributionCapture";
 import { ChatWidgetLoader } from "@/components/ChatWidgetLoader";
 import { GoogleTagManagerNoScript, GoogleTagManagerScript } from "@/components/GoogleTagManager";
 
@@ -91,6 +92,7 @@ export default function RootLayout({
       <body className="flex min-h-full flex-col bg-white">
         <GoogleTagManagerScript />
         <GoogleTagManagerNoScript />
+        <AttributionCapture />
         <OrganizationJsonLd />
         <Header />
         <main className="flex-1">{children}</main>

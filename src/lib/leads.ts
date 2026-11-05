@@ -1,3 +1,4 @@
+import { getAttributedOrigin } from "./attribution";
 import { whatsappLink } from "./site";
 
 // Estrutura de um lead capturado no site (orçamento, contato, etc.)
@@ -31,7 +32,9 @@ export async function submitLead(lead: Lead) {
       await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...lead, origin: "site", createdAt: new Date().toISOString() }),
+        // origin: se a pessoa chegou por anúncio, vai o endereço de entrada com os parâmetros (o CRM/Mind Marketing prova a campanha
+        // por eles); senão, "site" como sempre foi.
+        body: JSON.stringify({ ...lead, origin: getAttributedOrigin() ?? "site", createdAt: new Date().toISOString() }),
         keepalive: true,
       });
     } catch (err) {
