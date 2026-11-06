@@ -43,6 +43,14 @@ export async function submitLead(lead: Lead) {
     }
   }
 
+  // Envia e-mail para contato@kerosolar.com.br (não bloqueia o usuário se falhar)
+  fetch("/api/lead", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(lead),
+    keepalive: true,
+  }).catch((err) => console.error("Falha ao enviar e-mail de lead:", err));
+
   if (typeof window !== "undefined") {
     // Notifica GTM/Meta Pixel (evento Lead) e qualquer outra tag ouvindo
     (window as Window & { dataLayer?: object[] }).dataLayer =
