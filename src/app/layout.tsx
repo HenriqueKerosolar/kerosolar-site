@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Poppins, Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -98,8 +99,7 @@ export default function RootLayout({
         <main className="flex-1">{children}</main>
         <Footer />
         <ChatWidgetLoader />
-        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
-        <script src="https://mind-marketing.vercel.app/heatmap.js" data-workspace-id="9b1f177e-9bcf-44da-93e9-53aa994ab9ae" />
+        <Script src="https://mind-marketing.vercel.app/heatmap.js" data-workspace-id="9b1f177e-9bcf-44da-93e9-53aa994ab9ae" strategy="lazyOnload" />
       </body>
     </html>
   );

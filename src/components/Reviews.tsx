@@ -1,6 +1,13 @@
+"use client";
+
+import dynamic from "next/dynamic";
 import { company } from "@/lib/site";
 import { Testimonials } from "./Testimonials";
-import { GoogleReviews } from "./GoogleReviews";
+
+const GoogleReviews = dynamic(
+  () => import("./GoogleReviews").then((m) => m.GoogleReviews),
+  { ssr: false, loading: () => <Testimonials /> }
+);
 
 // Mostra as avaliações reais do Google quando o widget Featurable está
 // configurado; caso contrário, exibe os depoimentos estáticos (fallback).
