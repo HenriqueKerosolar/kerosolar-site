@@ -44,6 +44,14 @@ export async function submitLead(lead: Lead) {
   }
 
   if (typeof window !== "undefined") {
+    // Notifica GTM/Meta Pixel (evento Lead) e qualquer outra tag ouvindo
+    (window as Window & { dataLayer?: object[] }).dataLayer =
+      (window as Window & { dataLayer?: object[] }).dataLayer ?? [];
+    (window as Window & { dataLayer?: object[] }).dataLayer!.push({
+      event: "lead_form_submit",
+      lead_source: lead.source ?? "site",
+    });
+
     window.open(whatsappLink(buildWhatsappMessage(lead)), "_blank");
   }
 }
