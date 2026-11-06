@@ -90,6 +90,12 @@ export default function RootLayout({
       lang="pt-BR"
       className={`${poppins.variable} ${inter.variable} h-full antialiased`}
     >
+      <head>
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://www.google-analytics.com" />
+        <link rel="preconnect" href="https://connect.facebook.net" />
+        <link rel="dns-prefetch" href="https://mind-marketing.vercel.app" />
+      </head>
       <body className="flex min-h-full flex-col bg-white">
         <GoogleTagManagerScript />
         <GoogleTagManagerNoScript />
