@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://www.kerosolar.com.br/carregamento-veiculos-eletricos" },
   title: "Carregamento de Veículos Elétricos com Energia Solar",
   description:
-    "Carregadores (wallbox) e estações de recarga para carros elétricos abastecidos pela sua usina solar. Abasteça com a luz do sol e elimine o custo de combustível em casa, no condomínio ou na empresa.",
+    "Wallbox e estações de recarga para carros elétricos abastecidos pela usina solar. Elimine o custo de combustível em casa, no condomínio ou na empresa.",
 };
 
 const steps = [

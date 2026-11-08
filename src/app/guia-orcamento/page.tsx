@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://www.kerosolar.com.br/guia-orcamento" },
   title: "Como Entender um Orçamento de Gerador Solar",
   description:
-    "Guia completo para comparar propostas de energia solar: entenda kWp, kWh, kVA, sobredimensionamento de inversores e como evitar armadilhas ao comprar um gerador solar.",
+    "Guia para comparar propostas de energia solar: entenda kWp, kWh, kVA, sobredimensionamento de inversores e como evitar armadilhas ao comprar um gerador.",
 };
 
 const glossary = [
@@ -45,7 +45,7 @@ export default function GuiaPage() {
               por kWp.
             </p>
 
-            <h3>Siglas e termos das propostas</h3>
+            <h2>Siglas e termos das propostas</h2>
             <div className="grid gap-4 not-prose">
               {glossary.map((g) => (
                 <div key={g.term} className="rounded-xl border border-brand-100 bg-brand-50 p-4">
@@ -55,7 +55,7 @@ export default function GuiaPage() {
               ))}
             </div>
 
-            <h3>Preste atenção nesta comparação</h3>
+            <h2>Preste atenção nesta comparação</h2>
             <p>
               Os fatores mais importantes ao comparar propostas são o <strong>kVA/kW máximo do
               inversor</strong> e a <strong>quantidade de kWp dos painéis</strong>. Não foque na
@@ -68,7 +68,7 @@ export default function GuiaPage() {
               telhado não comporta muitos painéis menores, ou prevendo ampliação futura.
             </p>
 
-            <h3>Cuidado com o sobredimensionamento</h3>
+            <h2>Cuidado com o sobredimensionamento</h2>
             <p>
               É comum encontrar propostas onde o kW/kVA do inversor é bem menor que o kWp dos
               painéis. Verifique no datasheet até quantos kWp o inversor suporta — algumas marcas
@@ -94,7 +94,7 @@ export default function GuiaPage() {
               </p>
             </div>
 
-            <h3>String ou micro-inversor?</h3>
+            <h2>String ou micro-inversor?</h2>
             <p>
               <strong>String:</strong> o mais utilizado no Brasil. Indicado para telhados
               uniformes com muitos painéis na mesma direção e inclinação. Tem preço inferior,

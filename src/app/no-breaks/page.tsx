@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://www.kerosolar.com.br/no-breaks" },
   title: "No-breaks Solares",
   description:
-    "No-breaks solares que se pagam: protegem e suprem a falta de energia, geram parte da energia consumida e prolongam a vida das baterias. Muito superiores aos no-breaks tradicionais.",
+    "No-breaks solares que se pagam: protegem contra falta de energia, geram parte da energia consumida e prolongam a vida das baterias. Superiores aos tradicionais.",
 };
 
 export default function NoBreaksPage() {

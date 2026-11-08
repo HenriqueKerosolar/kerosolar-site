@@ -3,9 +3,9 @@ import Link from "next/link";
 import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: "KeroSolar — Energia Solar Fotovoltaica | Geradores, Projeto e Homologação",
+  title: "KeroSolar | Energia Solar Fotovoltaica — Geradores e Homologação",
   description:
-    "KeroSolar: venda, instalação e homologação de geradores solares em Rio de Janeiro e todo o Brasil. On-Grid, Off-Grid, Híbridos. Mais de 300 projetos, 5,0 ★ no Google. Reduza sua conta em até 95%.",
+    "Venda, instalação e homologação de geradores solares no RJ e em todo o Brasil. On-Grid, Off-Grid e Híbridos. Mais de 300 projetos, nota 5,0 ★ no Google.",
   keywords: [
     "energia solar Rio de Janeiro",
     "instalação energia solar RJ",

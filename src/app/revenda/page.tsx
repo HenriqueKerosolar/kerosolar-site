@@ -23,7 +23,7 @@ export default function RevendaPage() {
         String, Micro-inversor e String Otimizado — e fazemos parceria com integradores.
       </p>
 
-      <h3>Vendedores (pessoas físicas ou jurídicas)</h3>
+      <h2>Vendedores (pessoas físicas ou jurídicas)</h2>
       <p>
         Damos um treinamento de vendas onde ensinamos as particularidades, topologias e
         formatos de negócio do ramo fotovoltaico. O vendedor prospecta seus clientes e conduz
@@ -31,7 +31,7 @@ export default function RevendaPage() {
         projeto, de acordo com a forma de pagamento ou financiamento escolhido.
       </p>
 
-      <h3>Instaladores</h3>
+      <h2>Instaladores</h2>
       <p>
         Empresas ou profissionais que queiram executar instalações em suas regiões, a partir
         de clientes prospectados por nós através de campanhas de marketing. Os profissionais
@@ -39,7 +39,7 @@ export default function RevendaPage() {
         mínimo para formalizar a parceria.
       </p>
 
-      <h3>Integradores</h3>
+      <h2>Integradores</h2>
       <p>
         Têm preço de revenda e podem prospectar diretamente, beneficiando-se das nossas
         campanhas e da indicação de clientes na sua região. Cuidamos de toda a parte de

@@ -4,9 +4,9 @@ import { PageHero } from "@/components/PageHero";
 import { QuoteCta } from "@/components/QuoteCta";
 
 export const metadata: Metadata = {
-  title: "Geradores Solares — On-Grid, Off-Grid e Híbridos | KeroSolar",
+  title: "Geradores Solares | On-Grid, Off-Grid e Híbridos — KeroSolar",
   description:
-    "Geradores solares On-Grid, Off-Grid e Híbridos com instalação e homologação em todo o Brasil. Inversores de string, micro-inversores e string otimizado. Solicite seu orçamento gratuito.",
+    "Geradores solares On-Grid, Off-Grid e Híbridos com instalação e homologação em todo o Brasil. Inversores de string e micro-inversores. Orçamento gratuito.",
   keywords: ["gerador solar on-grid", "gerador solar off-grid", "inversor solar", "kit solar fotovoltaico", "micro-inversor solar", "usina solar residencial"],
   alternates: { canonical: "https://www.kerosolar.com.br/geradores" },
   openGraph: {

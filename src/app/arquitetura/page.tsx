@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://www.kerosolar.com.br/arquitetura" },
   title: "Arquitetura e Coberturas Solares",
   description:
-    "Coberturas solares para estacionamentos, garagens, terraços e áreas externas. Painéis como substitutos das telhas, unindo beleza, modernidade e sustentabilidade.",
+    "Coberturas solares para estacionamentos, garagens, terraços e áreas externas. Painéis no lugar das telhas: beleza, modernidade e sustentabilidade.",
 };
 
 export default function ArquiteturaPage() {

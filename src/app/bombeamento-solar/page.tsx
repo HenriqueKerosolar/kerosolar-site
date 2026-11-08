@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://www.kerosolar.com.br/bombeamento-solar" },
   title: "Bombeamento Solar",
   description:
-    "Sistemas de bombeamento solar para hidroponia, piscicultura, irrigação e reservatórios. Bombas monofásicas, bifásicas, trifásicas e kits em CC com frete grátis para todo o Brasil.",
+    "Sistemas de bombeamento solar para irrigação, piscicultura e hidroponia. Bombas monofásicas, bifásicas, trifásicas e kits CC. Frete grátis para o Brasil.",
 };
 
 export default function BombeamentoPage() {
