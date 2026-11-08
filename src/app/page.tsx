@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: "KeroSolar | Energia Solar Fotovoltaica — Geradores e Homologação",
+  title: "KeroSolar | Energia Solar Fotovoltaica no Brasil",
   description:
     "Venda, instalação e homologação de geradores solares no RJ e em todo o Brasil. On-Grid, Off-Grid e Híbridos. Mais de 300 projetos, nota 5,0 ★ no Google.",
   keywords: [

@@ -5,7 +5,7 @@ import { QuoteCta } from "@/components/QuoteCta";
 
 export const metadata: Metadata = {
   alternates: { canonical: "https://www.kerosolar.com.br/carregamento-veiculos-eletricos" },
-  title: "Carregamento de Veículos Elétricos com Energia Solar",
+  title: { absolute: "Recarga de Veículos Elétricos com Energia Solar | KeroSolar" },
   description:
     "Wallbox e estações de recarga para carros elétricos abastecidos pela usina solar. Elimine o custo de combustível em casa, no condomínio ou na empresa.",
 };

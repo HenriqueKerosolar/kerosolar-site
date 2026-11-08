@@ -6,7 +6,7 @@ import { QuoteCta } from "@/components/QuoteCta";
 import { company } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Sobre a KeroSolar | Empresa de Energia Solar no Rio de Janeiro",
+  title: { absolute: "Sobre a KeroSolar | Energia Solar no Rio de Janeiro" },
   description:
     "KeroSolar: empresa de energia solar desde 2019 com mais de 300 projetos. Nota 5,0 ★ no Google. Payback de 2 a 3 anos, retorno de 24% ao ano.",
   alternates: { canonical: "https://www.kerosolar.com.br/sobre" },

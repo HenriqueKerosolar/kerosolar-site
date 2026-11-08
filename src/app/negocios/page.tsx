@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { SolutionPage } from "@/components/SolutionPage";
 
 export const metadata: Metadata = {
-  title: "Energia Solar para Empresas e Indústrias | Reduza Custos",
+  title: { absolute: "Energia Solar para Empresas e Indústrias | KeroSolar" },
   description:
     "Energia solar para empresas e indústrias: reduza a conta em até 95%, elimine a hora-ponta e ganhe competitividade. Projeto, financiamento e homologação.",
   keywords: ["energia solar para empresas", "usina solar comercial", "solar industrial", "energia solar CNPJ", "gerador solar comercial", "redução de demanda energia"],

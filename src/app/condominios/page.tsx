@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { SolutionPage } from "@/components/SolutionPage";
 
 export const metadata: Metadata = {
-  title: "Energia Solar para Condomínios | Reduza até 95% da Conta",
+  title: { absolute: "Energia Solar para Condomínios | até 95% | KeroSolar" },
   description:
     "Usina solar para condomínio: reduza até 95% nas despesas com energia. Financiamento sem avalista. KeroSolar cuida do projeto à homologação.",
   keywords: ["energia solar condomínio", "usina solar condomínio", "solar para síndico", "energia solar área comum", "gerador solar prédio"],
