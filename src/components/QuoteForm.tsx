@@ -19,18 +19,38 @@ export function QuoteForm({
   const [city, setCity] = useState("");
   const [message, setMessage] = useState("");
   const [contact, setContact] = useState("Todos");
+  const [sent, setSent] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    void submitLead({
-      name,
-      phone,
-      email,
-      city,
-      contactPreference: contact,
-      message,
-      source,
-    });
+    await submitLead(
+      { name, phone, email, city, contactPreference: contact, message, source },
+      { openWhatsApp: false },
+    );
+    setSent(true);
+  }
+
+  if (sent) {
+    return (
+      <div className="grid gap-4 rounded-2xl bg-brand-50 p-8 text-center">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand-100 text-brand-600">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M20 6L9 17l-5-5" />
+          </svg>
+        </div>
+        <div>
+          <p className="text-lg font-semibold text-brand-800">Mensagem enviada!</p>
+          <p className="mt-1 text-sm text-muted">Recebemos sua solicitação e entraremos em contato em breve.</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setSent(false)}
+          className="mx-auto text-sm text-brand-500 underline underline-offset-2 hover:text-brand-700"
+        >
+          Enviar outra mensagem
+        </button>
+      </div>
+    );
   }
 
   return (
@@ -96,9 +116,10 @@ export function QuoteForm({
         type="submit"
         className="mt-1 inline-flex items-center justify-center gap-2 rounded-full bg-sun-500 px-6 py-3 font-semibold text-brand-900 shadow-sm transition hover:bg-sun-400"
       >
-        Enviar pelo WhatsApp
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-          <path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24z" />
+        Enviar por E-mail
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <rect x="2" y="4" width="20" height="16" rx="2" />
+          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
         </svg>
       </button>
       <p className="text-center text-xs text-muted">

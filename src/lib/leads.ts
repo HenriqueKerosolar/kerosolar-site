@@ -24,7 +24,7 @@ export type Lead = {
  * Para integrar com o CRM, basta criar `.env.local` com:
  *   NEXT_PUBLIC_CRM_LEAD_ENDPOINT=https://crm.kerosolar.com.br/api/leads
  */
-export async function submitLead(lead: Lead) {
+export async function submitLead(lead: Lead, options?: { openWhatsApp?: boolean }) {
   const endpoint = process.env.NEXT_PUBLIC_CRM_LEAD_ENDPOINT;
 
   if (endpoint) {
@@ -60,7 +60,10 @@ export async function submitLead(lead: Lead) {
       lead_source: lead.source ?? "site",
     });
 
-    window.open(whatsappLink(buildWhatsappMessage(lead)), "_blank");
+    const shouldOpenWhatsApp = options?.openWhatsApp !== false && lead.contactPreference !== "E-mail";
+    if (shouldOpenWhatsApp) {
+      window.open(whatsappLink(buildWhatsappMessage(lead)), "_blank");
+    }
   }
 }
 
