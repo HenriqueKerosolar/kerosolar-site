@@ -91,7 +91,9 @@ ${crmLink ? `<p style="margin-top:16px"><a href="${esc(crmLink)}">Abrir o lead n
   // Relay para o CRM (não bloqueia o usuário se falhar)
   const crmEndpoint = process.env.CRM_LEAD_FORM_ENDPOINT?.trim();
   const crmKey = process.env.CRM_WEBCHAT_API_KEY?.trim();
-  if (crmEndpoint) {
+  // NÃO repassa quando quem chamou foi o PRÓPRIO CRM (aviso de lead do chat, header x-relay-key):
+  // o lead já existe lá — repassar criava um lead duplicado para cada visitante do chat.
+  if (crmEndpoint && !doCrm) {
     fetch(crmEndpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json", ...(crmKey ? { "x-api-key": crmKey } : {}) },
