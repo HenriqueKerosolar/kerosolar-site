@@ -88,6 +88,18 @@ ${crmLink ? `<p style="margin-top:16px"><a href="${esc(crmLink)}">Abrir o lead n
   const replyTo = /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(email) ? email : undefined;
   const para = (process.env.LEAD_NOTIFY_EMAIL || "contato@kerosolar.com.br").split(",").map((s) => s.trim()).filter(Boolean);
 
+  // Relay para o CRM (não bloqueia o usuário se falhar)
+  const crmEndpoint = process.env.CRM_LEAD_FORM_ENDPOINT?.trim();
+  const crmKey = process.env.CRM_WEBCHAT_API_KEY?.trim();
+  if (crmEndpoint) {
+    fetch(crmEndpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...(crmKey ? { "x-api-key": crmKey } : {}) },
+      body: JSON.stringify({ name, phone: campo(body.phone, 30), email: campo(body.email, 160), city: campo(body.city, 80), contactPreference: campo(body.contactPreference, 40), message: campo(body.message, 2000), source: campo(body.source, 80) || "formulario-site" }),
+      keepalive: true,
+    }).catch((e) => console.error("[lead crm]", e instanceof Error ? e.message : e));
+  }
+
   try {
     await enviarEmail(cfg, { to: para, subject: `Novo lead do site — ${name}`, text, html, replyTo });
     // ✉️ Resposta automática ao CLIENTE (só se ele informou e-mail): agradece e indica o WhatsApp.
