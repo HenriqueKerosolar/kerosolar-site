@@ -36,17 +36,38 @@ export async function chatSend(
   visitorId: string,
   text: string,
   name?: string,
-): Promise<{ reply: string | null; handoff: boolean }> {
+  contato?: { phone?: string; email?: string },
+): Promise<{ reply: string | null; handoff: boolean; lastAt: string | null }> {
   const res = await fetch("/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ visitorId, name, text }),
+    body: JSON.stringify({ visitorId, name, text, ...(contato ?? {}), source: "Chat do site" }),
   });
   const data = (await res.json().catch(() => ({}))) as {
     reply?: string;
     handoff?: boolean;
+    lastAt?: string | null;
     error?: string;
   };
   if (!res.ok) throw new Error(data?.error || `Erro ${res.status}`);
-  return { reply: data.reply ?? null, handoff: !!data.handoff };
+  return { reply: data.reply ?? null, handoff: !!data.handoff, lastAt: data.lastAt ?? null };
+}
+
+/** Separa o que o visitante digitou como contato: e-mail ou telefone. */
+export function separarContato(v: string): { phone?: string; email?: string } {
+  const t = v.trim();
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(t)) return { email: t };
+  const dig = t.replace(/\D/g, "");
+  return dig.length >= 8 ? { phone: dig } : {};
+}
+
+/** Mensagens novas do CRM (atendente, follow-up) enviadas depois de `after` (ISO). */
+export async function chatPoll(
+  visitorId: string,
+  after: string,
+): Promise<{ id: string; content: string; createdAt: string }[]> {
+  const res = await fetch(`/api/chat?visitorId=${encodeURIComponent(visitorId)}&after=${encodeURIComponent(after)}`, { cache: "no-store" });
+  if (!res.ok) return [];
+  const data = (await res.json().catch(() => ({}))) as { messages?: { id: string; content: string; createdAt: string }[] };
+  return data.messages ?? [];
 }

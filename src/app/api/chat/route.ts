@@ -36,3 +36,23 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Falha ao contatar o CRM." }, { status: 502 });
   }
 }
+
+// Polling: mensagens novas do CRM (resposta do atendente, follow-ups) para este visitante.
+export async function GET(req: Request) {
+  if (!ENDPOINT) return NextResponse.json({ messages: [] });
+  const u = new URL(req.url);
+  const visitorId = u.searchParams.get("visitorId") || "";
+  const after = u.searchParams.get("after") || "";
+  if (!visitorId || !after || isNaN(Date.parse(after))) return NextResponse.json({ messages: [] });
+  try {
+    const qs = new URLSearchParams({ visitorId, after }).toString();
+    const res = await fetch(`${ENDPOINT}?${qs}`, {
+      headers: API_KEY ? { "x-api-key": API_KEY } : {},
+      cache: "no-store",
+    });
+    const data = await res.text();
+    return new NextResponse(data, { status: res.status, headers: { "Content-Type": "application/json" } });
+  } catch {
+    return NextResponse.json({ messages: [] });
+  }
+}

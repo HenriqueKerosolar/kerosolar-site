@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { company } from "@/lib/site";
-import { getVisitorId, chatSend, type ChatMessage } from "@/lib/chat";
+import { getVisitorId, chatSend, chatPoll, separarContato, type ChatMessage } from "@/lib/chat";
 
 let _id = 0;
 const nextId = () => `m${++_id}`;
@@ -23,6 +23,9 @@ export function ChatWidget() {
   const [visitorContact, setVisitorContact] = useState("");
   const visitorIdRef = useRef<string>("");
   const pendingFirstMessage = useRef<string | null>(null);
+  // horário (ISO) da última mensagem do CRM já exibida → o polling só busca o que vier depois
+  const lastAtRef = useRef<string | null>(null);
+  const sendingRef = useRef(false);
 
   // identidade estável do visitante (persistida no navegador)
   useEffect(() => {
@@ -82,9 +85,9 @@ export function ChatWidget() {
     setPhase("chat");
     const first = pendingFirstMessage.current;
     pendingFirstMessage.current = null;
-    // Não inclui o telefone no texto para não confundir o motor do CRM
+    // Não inclui o telefone no texto para não confundir o motor do CRM — vai em campo próprio (phone/email)
     const opener = first || `Olá! Meu nome é ${visitorName}.`;
-    await aiReply(opener, visitorName);
+    await aiReply(opener, visitorName, separarContato(contact));
   }
 
   // Conversa: tudo passa pelo motor do WhatsApp (ingestMessage no CRM).
@@ -93,17 +96,39 @@ export function ChatWidget() {
   }
 
   // envia a mensagem ao CRM (webchat) e mostra a resposta da IA
-  async function aiReply(text: string, name?: string) {
+  async function aiReply(text: string, name?: string, contato?: { phone?: string; email?: string }) {
     setSending(true);
+    sendingRef.current = true;
     try {
-      const { reply } = await chatSend(visitorIdRef.current, text, name ?? (visitorName || undefined));
+      const { reply, lastAt } = await chatSend(visitorIdRef.current, text, name ?? (visitorName || undefined), contato);
+      if (lastAt) lastAtRef.current = lastAt;
       pushBot(reply || "Recebido! 👍 Um especialista vai te responder em instantes.");
     } catch {
       pushBot("Ops, não consegui responder agora. 🙏 Tente de novo ou fale pelo WhatsApp no topo do chat.");
     } finally {
+      sendingRef.current = false;
       setSending(false);
     }
   }
+
+  // 🔄 Busca mensagens novas do CRM (resposta do atendente, follow-ups) enquanto a conversa existe.
+  //    Chat aberto: a cada 6 s; fechado: a cada 30 s. Nunca durante um envio (a resposta já vem nele).
+  useEffect(() => {
+    if (phase !== "chat") return;
+    let parado = false;
+    const tick = async () => {
+      const after = lastAtRef.current;
+      if (parado || sendingRef.current || !after || document.hidden) return;
+      const novas = await chatPoll(visitorIdRef.current, after).catch(() => []);
+      if (parado || sendingRef.current || lastAtRef.current !== after) return;
+      const validas = novas.filter((m) => m.createdAt > after && m.content?.trim());
+      if (!validas.length) return;
+      lastAtRef.current = validas[validas.length - 1].createdAt;
+      setMessages((ms) => [...ms, ...validas.map((m) => ({ id: nextId(), role: "bot" as const, kind: "text" as const, text: m.content }))]);
+    };
+    const t = setInterval(tick, open ? 6000 : 30000);
+    return () => { parado = true; clearInterval(t); };
+  }, [phase, open]);
 
   async function handleSend() {
     const text = input.trim();
@@ -151,12 +176,15 @@ export function ChatWidget() {
 
   async function sendNote(note: string) {
     setSending(true);
+    sendingRef.current = true;
     try {
-      const { reply } = await chatSend(visitorIdRef.current, note, visitorName || undefined);
+      const { reply, lastAt } = await chatSend(visitorIdRef.current, note, visitorName || undefined);
+      if (lastAt) lastAtRef.current = lastAt;
       pushBot(reply || "Recebido! 👍 Já encaminhei para o nosso time.");
     } catch {
       pushBot("Não consegui enviar o arquivo agora. 🙏 Tente pelo WhatsApp no topo do chat.");
     } finally {
+      sendingRef.current = false;
       setSending(false);
     }
   }
