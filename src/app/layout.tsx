@@ -6,6 +6,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { OrganizationJsonLd } from "@/components/JsonLd";
 import { AttributionCapture } from "@/components/AttributionCapture";
+import { DownloadTracker } from "@/components/DownloadTracker";
 import { ChatWidgetLoader } from "@/components/ChatWidgetLoader";
 import { GoogleTagManagerNoScript, GoogleTagManagerScript } from "@/components/GoogleTagManager";
 
@@ -100,6 +101,7 @@ export default function RootLayout({
         <GoogleTagManagerScript />
         <GoogleTagManagerNoScript />
         <AttributionCapture />
+        <DownloadTracker />
         <OrganizationJsonLd />
         <Header />
         <main className="flex-1">{children}</main>
